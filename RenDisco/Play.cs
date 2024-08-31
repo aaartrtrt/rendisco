@@ -73,21 +73,18 @@ namespace RenDisco {
                 case Show show:
                     _runtime.ShowImage(show.Image, show.Transition);
                     break;
-                case IfCondition ifCondition:
-                    ExecuteConditionalBlock(ifCondition.Condition, ifCondition.Content);
-                    break;
-                case ElifCondition elifCondition:
-                    ExecuteConditionalBlock(elifCondition.Condition, elifCondition.Content);
-                    break;
-                case Jump jump:
-                    ExecuteJump(jump.Label);
-                    return false;
-                case Menu menu:
-                    ExecuteMenu(menu);
-                    break;
                 case Define define:
                     ExecuteDefine(define);
                     break;
+                case IfCondition ifCondition:
+                    return ExecuteConditionalBlock(ifCondition.Condition, ifCondition.Content);
+                case ElifCondition elifCondition:
+                    return ExecuteConditionalBlock(elifCondition.Condition, elifCondition.Content);
+                case Menu menu:
+                    return ExecuteMenu(menu);
+                case Jump jump:
+                    ExecuteJump(jump.Label);
+                    return false;
                 default:
                     Console.WriteLine($"Unknown command type encountered: {command.Type}");
                     break;
@@ -108,11 +105,12 @@ namespace RenDisco {
         /// Display a menu and handle choice consequences.
         /// </summary>
         /// <param name="menu">The menu command containing choices and responses.</param>
-        private void ExecuteMenu(Menu menu)
+        /// <returns>The result of the run, whether to break or not.</returns>
+        private bool ExecuteMenu(Menu menu)
         {
             int selectedChoice = _runtime.ShowChoices(menu.Choices);
             var subPlay = new Play(_runtime, menu.Choices[selectedChoice].Response, this);
-            subPlay.Next();
+            return subPlay.Next();
         }
 
         /// <summary>
@@ -131,13 +129,16 @@ namespace RenDisco {
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="content"></param>
-        private void ExecuteConditionalBlock(string condition, List<RenpyCommand> content)
+        /// <returns>The result of the run, whether to break or not.</returns>
+        private bool ExecuteConditionalBlock(string condition, List<RenpyCommand> content)
         {
             if (EvaluateCondition(condition))
             {
                 var subPlay = new Play(_runtime, content, this);
-                subPlay.Next();
+                return subPlay.Next();
             }
+
+            return true;
         }
 
         /// <summary>

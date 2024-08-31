@@ -45,8 +45,8 @@ namespace RenDisco {
                 int opIndex = condition.IndexOf(op, StringComparison.Ordinal);
                 if (opIndex > -1)
                 {
-                    var left = condition.Substring(0, opIndex).Trim();
-                    var right = condition.Substring(opIndex + op.Length).Trim();
+                    var left = condition.Substring(0, opIndex).Trim('\"');
+                    var right = condition.Substring(opIndex + op.Length).Trim('\"');
 
                     var leftValue = runtime.GetVariable(left) ?? left;
                     var rightValue = runtime.GetVariable(right) ?? right;
