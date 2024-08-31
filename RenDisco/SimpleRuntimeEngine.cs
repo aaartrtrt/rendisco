@@ -43,19 +43,25 @@ namespace RenDisco {
             return choice - 1;
         }
 
-        public void DefineCharacter(string name, string? colour = null)
+        public void DefineCharacter(string id, string name, string? colour = null)
         {
-            if (!_characters.ContainsKey(name))
+            if (!_characters.ContainsKey(id))
             {
                 Dictionary<string, string> characterDict = new Dictionary<string, string>();
+                characterDict["name"] = name;
                 characterDict["colour"] = colour ?? "#ffffff";
-                _characters[name] = characterDict;
+                _characters[id] = characterDict;
             }
         }
-
-        public string? GetCharacterColour(string name)
+        
+        public string? GetCharacterName(string id)
         {
-            return _characters.ContainsKey(name) ? _characters[name]["colour"] : null;
+            return _characters.ContainsKey(id) ? _characters[id]["name"] : null;
+        }
+
+        public string? GetCharacterColour(string id)
+        {
+            return _characters.ContainsKey(id) ? _characters[id]["colour"] : null;
         }
 
         public void SetVariable(string name, object value)

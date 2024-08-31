@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenDisco", "RenDisco\RenDis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenDisco.Console", "RenDisco.Console\RenDisco.Console.csproj", "{B9F6CE70-7BC1-45A8-806F-ADE251933EC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenDisco.Test", "RenDisco.Test\RenDisco.Test.csproj", "{DA6E3631-7B67-4432-8FF1-8C362BD49F7C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{B9F6CE70-7BC1-45A8-806F-ADE251933EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9F6CE70-7BC1-45A8-806F-ADE251933EC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9F6CE70-7BC1-45A8-806F-ADE251933EC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA6E3631-7B67-4432-8FF1-8C362BD49F7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA6E3631-7B67-4432-8FF1-8C362BD49F7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA6E3631-7B67-4432-8FF1-8C362BD49F7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA6E3631-7B67-4432-8FF1-8C362BD49F7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

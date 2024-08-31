@@ -28,6 +28,9 @@ namespace RenDisco {
             }
 
             if (returnToParent && _parent != null) _parent.Next();
+
+            // Reset
+            ProgramCounter = 0;
         }
 
         private bool ExecuteCommand(RenpyCommand command)
@@ -101,22 +104,35 @@ namespace RenDisco {
                 // Process character definition
                 if (define.Value.Contains("Character"))
                 {
-                    string[] parts = define.Value.Split(new[] { '(', ',', ')' }, StringSplitOptions.RemoveEmptyEntries);
-                    string charName = parts[0].Trim('"');
+                    string text = define.Value;
 
-                    if (parts.Length > 1)
+                    if (text.Contains("color"))
                     {
-                        string color = parts.Length > 2 ? parts[2].Trim().Substring("color=".Length).Trim('"') : null;
-                        _runtime.DefineCharacter(define.Name, color);
+                        // Parse the Character name
+                        int charNameStart = text.IndexOf('(') + 1;
+                        int charNameEnd = text.IndexOf('"', charNameStart + 1);
+                        string characterName = text.Substring(charNameStart, charNameEnd - charNameStart).Trim('"');
+
+                        // Parse the color
+                        int colorStart = text.IndexOf("color=\"") + 7;
+                        int colorEnd = text.IndexOf("\"", colorStart);
+                        string color = text.Substring(colorStart, colorEnd - colorStart).Trim('"');
+                        
+                        _runtime.DefineCharacter(define.Name, characterName, color);
                     }
                     else
                     {
-                        _runtime.DefineCharacter(define.Name);
+                        // Parse the Character name
+                        int charNameStart = text.IndexOf('(') + 1;
+                        int charNameEnd = text.IndexOf('"', charNameStart + 1);
+                        string characterName = text.Substring(charNameStart, charNameEnd - charNameStart);
+
+                        _runtime.DefineCharacter(define.Name, characterName);
                     }
                 }
                 else
                 {
-                    _runtime.SetVariable(define.Name, define.Value);
+                    _runtime.SetVariable(define.Name, define.Value.Trim('"'));
                 }
             }
             else

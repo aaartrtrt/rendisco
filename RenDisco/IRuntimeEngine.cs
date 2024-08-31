@@ -16,9 +16,11 @@ namespace RenDisco {
         int ShowChoices(List<string> choices);
 
         // Method to store, define and get Characters
-        void DefineCharacter(string name, string? colour = null);
+        void DefineCharacter(string id, string name, string? colour = null);
         // Method to retrieve character details (could be enhanced to return Character object)
-        string? GetCharacterColour(string name);
+        string? GetCharacterColour(string id);
+        // Method to retrieve character name (could be enhanced to return Character object)
+        string? GetCharacterName(string id);
 
         // Method to store, define and get variables
         void SetVariable(string name, object value);
