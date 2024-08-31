@@ -10,7 +10,7 @@ RenDisco is a project for .NET to parse and execute scripts written in a subset 
 
 ## Getting Started ✍️
 
-To get started with RenPySharp, clone this repository and build the solution in your preferred .NET environment.
+To get started with RenDisco, clone this repository and build the solution in your preferred .NET environment.
 
 ### Prerequisites 📦
 
@@ -20,11 +20,11 @@ To get started with RenPySharp, clone this repository and build the solution in 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/RenPySharp.git
+   git clone https://github.com/aaartrtrt/RenDisco.git
    ```
 2. Navigate to the cloned directory and build the project:
    ```bash
-   cd RenPySharp
+   cd RenDisco
    dotnet build
    ```
 
