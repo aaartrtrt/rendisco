@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace RenDisco {
@@ -11,6 +12,12 @@ namespace RenDisco {
 
         public int ProgramCounter { get; set; }
 
+        /// <summary>
+        /// Constructor for the play execution environment.
+        /// </summary>
+        /// <param name="runtime">The engine that executes the script actions.</param>
+        /// <param name="commands">List of commands to execute.</param>
+        /// <param name="parent">The parent Play context, used for handling scopes and returns.</param>
         public Play(IRuntimeEngine runtime, List<RenpyCommand> commands, Play? parent = null)
         {
             _runtime = runtime;
@@ -18,263 +25,157 @@ namespace RenDisco {
             _parent = parent;
         }
 
-        public void Next(bool returnToParent = false)
+        /// <summary>
+        /// Execute commands from the current ProgramCounter position.
+        /// </summary>
+        /// <param name="returnToParent">Specifies if execution should continue in parent context after completing current commands.</param>
+        /// <returns>Boolean indicating if execution should continue.</returns>
+        public bool Next(bool returnToParent = false, int programCounter = 0)
         {
-            for (int _ = 0; ProgramCounter < _commands.Count; ProgramCounter++)
+            // Start Program counter here
+            ProgramCounter = programCounter;
+
+            for (; ProgramCounter < _commands.Count; ProgramCounter++)
             {
                 var command = _commands[ProgramCounter];
                 if (!ExecuteCommand(command))
-                    break;
+                    // This means execution was interrupted by a jump or something else.
+                    return false;
             }
 
-            if (returnToParent && _parent != null) _parent.Next();
-
-            // Reset
-            ProgramCounter = 0;
-        }
-
-        private bool ExecuteCommand(RenpyCommand command)
-        {
-            if (command is Label label)
+            if (returnToParent && _parent != null) 
             {
-                // Nothing to do when encountering a Label itself while executing (can be handled by the parent context)
-                // Unless of course... We've inset something onto that label
-                if (0 < label.Commands.Count) {
-                    var subPlay = new Play(_runtime, label.Commands, this);
-                    subPlay.Next();
-                }
-            }
-            else if (command is Dialogue dialogue)
-            {
-                _runtime.ShowDialogue(dialogue.Character, dialogue.Text);
-            }
-            else if (command is Scene scene)
-            {
-                _runtime.ShowImage(scene.Image, scene.Transition);
-            }
-            else if (command is Show show)
-            {
-                _runtime.ShowImage(show.Image, show.Transition);
-            }
-            else if (command is IfCondition ifCondition)
-            {
-                if (EvaluateCondition(ifCondition.Condition))
-                {
-                    var subPlay = new Play(_runtime, ifCondition.Content, this);
-                    subPlay.Next();
-                }
-            }
-            else if (command is ElifCondition elifCondition)
-            {
-                if (EvaluateCondition(elifCondition.Condition))
-                {
-                    var subPlay = new Play(_runtime, elifCondition.Content, this);
-                    subPlay.Next();
-                }
-            }
-            else if (command is Jump jump)
-            {
-                /// TODO: This treats it like a method... be warned.
-                var targetLabel = FindLabel(jump.Label);
-                if (targetLabel != null)
-                {
-                    targetLabel?.Next(true);
-                }
-
-                // We'll let the Play go nuts
-                return false;
-            }
-            else if (command is Menu menu)
-            {
-                var choices = new List<string>();
-                var responses = new Dictionary<int, List<RenpyCommand>>();
-
-                for (int i = 0; i < menu.Choices.Count; i++)
-                {
-                    choices.Add(menu.Choices[i].OptionText);
-                    responses[i] = menu.Choices[i].Response;
-                }
-
-                int selectedChoice = _runtime.ShowChoices(choices);
-                var subPlay = new Play(_runtime, responses[selectedChoice], this);
-                subPlay.Next();
-            }
-            else if (command is Define define)
-            {
-                // Process character definition
-                if (define.Value.Contains("Character"))
-                {
-                    string text = define.Value;
-
-                    if (text.Contains("color"))
-                    {
-                        // Parse the Character name
-                        int charNameStart = text.IndexOf('(') + 1;
-                        int charNameEnd = text.IndexOf('"', charNameStart + 1);
-                        string characterName = text.Substring(charNameStart, charNameEnd - charNameStart).Trim('"');
-
-                        // Parse the color
-                        int colorStart = text.IndexOf("color=\"") + 7;
-                        int colorEnd = text.IndexOf("\"", colorStart);
-                        string color = text.Substring(colorStart, colorEnd - colorStart).Trim('"');
-                        
-                        _runtime.DefineCharacter(define.Name, characterName, color);
-                    }
-                    else
-                    {
-                        // Parse the Character name
-                        int charNameStart = text.IndexOf('(') + 1;
-                        int charNameEnd = text.IndexOf('"', charNameStart + 1);
-                        string characterName = text.Substring(charNameStart, charNameEnd - charNameStart);
-
-                        _runtime.DefineCharacter(define.Name, characterName);
-                    }
-                }
-                else
-                {
-                    _runtime.SetVariable(define.Name, define.Value.Trim('"'));
-                }
-            }
-            else
-            {
-                Console.WriteLine($"Unknown command type encountered: {command.Type}");
+                _parent.Next(true);
             }
 
+            // This means we're free to continue.
             return true;
         }
 
+        /// <summary>
+        /// Executes a single command.
+        /// </summary>
+        /// <param name="command">The command to execute.</param>
+        /// <returns>Boolean indicating if execution should continue.</returns>
+        private bool ExecuteCommand(RenpyCommand command)
+        {
+            switch (command)
+            {
+                case Label label:
+                    ExecuteLabel(label);
+                    break;
+                case Dialogue dialogue:
+                    _runtime.ShowDialogue(dialogue.Character, dialogue.Text);
+                    break;
+                case Scene scene:
+                    _runtime.ShowImage(scene.Image, scene.Transition);
+                    break;
+                case Show show:
+                    _runtime.ShowImage(show.Image, show.Transition);
+                    break;
+                case IfCondition ifCondition:
+                    ExecuteConditionalBlock(ifCondition.Condition, ifCondition.Content);
+                    break;
+                case ElifCondition elifCondition:
+                    ExecuteConditionalBlock(elifCondition.Condition, elifCondition.Content);
+                    break;
+                case Jump jump:
+                    ExecuteJump(jump.Label);
+                    return false;
+                case Menu menu:
+                    ExecuteMenu(menu);
+                    break;
+                case Define define:
+                    ExecuteDefine(define);
+                    break;
+                default:
+                    Console.WriteLine($"Unknown command type encountered: {command.Type}");
+                    break;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Executes defined variables or character settings.
+        /// </summary>
+        /// <param name="define">The define command to execute.</param>
+        private void ExecuteDefine(Define define)
+        {
+            _runtime.ExecuteDefine(define);
+        }
+
+        /// <summary>
+        /// Display a menu and handle choice consequences.
+        /// </summary>
+        /// <param name="menu">The menu command containing choices and responses.</param>
+        private void ExecuteMenu(Menu menu)
+        {
+            int selectedChoice = _runtime.ShowChoices(menu.Choices);
+            var subPlay = new Play(_runtime, menu.Choices[selectedChoice].Response, this);
+            subPlay.Next();
+        }
+
+        /// <summary>
+        /// Handle commands conditionally.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="content"></param>
+        private void ExecuteLabel(Label label)
+        {
+            var subPlay = new Play(_runtime, label.Commands, this);
+            subPlay.Next();
+        }
+
+        /// <summary>
+        /// Handle commands conditionally.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="content"></param>
+        private void ExecuteConditionalBlock(string condition, List<RenpyCommand> content)
+        {
+            if (EvaluateCondition(condition))
+            {
+                var subPlay = new Play(_runtime, content, this);
+                subPlay.Next();
+            }
+        }
+
+        /// <summary>
+        /// Execute a jump command which modifies the program counter.
+        /// </summary>
+        /// <param name="labelName">The label name to jump to.</param>
+        private void ExecuteJump(string labelName)
+        {
+            var labelPlay = FindLabel(labelName);
+            labelPlay?.Next(returnToParent: true, programCounter: labelPlay.ProgramCounter);
+        }
+
+        /// <summary>
+        /// Locate a label within the command set.
+        /// </summary>
+        /// <param name="labelName">The name of the label to find.</param>
+        /// <returns>The Play instance associated with the found label, or null if no label found.</returns>
         private Play? FindLabel(string labelName)
         {
             for (var i = 0; i < _commands.Count; i++)
             {
-                var command = _commands[i];
-                if (command is Label label && label.Name == labelName)
+                if (_commands[i] is Label label && label.Name == labelName)
                 {
                     ProgramCounter = i;
                     return this;
                 }
             }
-
-            if (_parent == null)
-                return null; // Handle as an error or return default/fallback label if appropriate
-            else
-                return _parent.FindLabel(labelName);
+            return _parent?.FindLabel(labelName);
         }
 
+        /// <summary>
+        /// Evaluate a boolean condition.
+        /// </summary>
+        /// <param name="condition">The condition as a string.</param>
+        /// <returns>The result of the condition evaluation.</returns>
         private bool EvaluateCondition(string condition)
         {
-            condition = condition.Trim();
-
-            if (condition.Equals("True", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            if (condition.Equals("False", StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-
-            if (condition.StartsWith("not "))
-            {
-                return !EvaluateCondition(condition.Substring(4).Trim());
-            }
-
-            if (condition.Contains(" and ") || condition.Contains(" or "))
-            {
-                return EvaluateBooleanLogic(condition);
-            }
-
-            if (Regex.IsMatch(condition, @"[!<>=]+"))
-            {
-                return EvaluateComparison(condition);
-            }
-
-            var variableValue = _runtime.GetVariable(condition);
-            return variableValue != null && !Equals(variableValue, false);
-        }
-
-        private bool EvaluateComparison(string condition)
-        {
-            var comparisonOperators = new[] { "==", "!=", ">=", "<=", ">", "<" };
-            foreach (string op in comparisonOperators)
-            {
-                int opIndex = condition.IndexOf(op, StringComparison.Ordinal);
-                if (opIndex > -1)
-                {
-                    var left = condition.Substring(0, opIndex).Trim();
-                    var right = condition.Substring(opIndex + op.Length).Trim();
-
-                    var leftValue = _runtime.GetVariable(left) ?? left;
-                    var rightValue = _runtime.GetVariable(right) ?? right;
-
-                    if (double.TryParse(leftValue.ToString(), out double leftNumber) && double.TryParse(rightValue.ToString(), out double rightNumber))
-                    {
-                        return PerformNumericComparison(leftNumber, rightNumber, op);
-                    }
-
-                    return PerformStringComparison(leftValue.ToString(), rightValue.ToString(), op);
-                }
-            }
-            return false;
-        }
-
-        private bool PerformNumericComparison(double left, double right, string op)
-        {
-            return op switch
-            {
-                "==" => left == right,
-                "!=" => left != right,
-                ">" => left > right,
-                "<" => left < right,
-                ">=" => left >= right,
-                "<=" => left <= right,
-                _ => false,
-            };
-        }
-
-        private bool PerformStringComparison(string left, string right, string op)
-        {
-            int comparisonResult = string.Compare(left, right, StringComparison.OrdinalIgnoreCase);
-            return op switch
-            {
-                "==" => comparisonResult == 0,
-                "!=" => comparisonResult != 0,
-                ">" => comparisonResult > 0,
-                "<" => comparisonResult < 0,
-                ">=" => comparisonResult >= 0,
-                "<=" => comparisonResult <= 0,
-                _ => false,
-            };
-        }
-
-        private bool EvaluateBooleanLogic(string condition)
-        {
-            var andParts = condition.Split(new[] { " and " }, StringSplitOptions.None);
-            var orParts = new List<string>();
-
-            foreach (var part in andParts)
-            {
-                orParts.AddRange(part.Split(new[] { " or " }, StringSplitOptions.None));
-            }
-
-            foreach (var andCondition in andParts)
-            {
-                if (!EvaluateCondition(andCondition.Trim()))
-                {
-                    return false;
-                }
-            }
-
-            foreach (var orCondition in orParts)
-            {
-                if (EvaluateCondition(orCondition.Trim()))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return Evaluate.EvaluateCondition(_runtime, condition);
         }
     }
 }

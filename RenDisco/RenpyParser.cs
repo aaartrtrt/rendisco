@@ -6,23 +6,35 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace RenDisco {
+    /// <summary>
+    /// Parses Ren'Py script code and creates a list of RenpyCommand objects to represent the script.
+    /// </summary>
     public class RenpyParser
     {
-        // Method to parse a script from a file path
+        /// <summary>
+        /// Parses a script from a file by file path.
+        /// </summary>
+        /// <param name="filePath">Path to the Ren'Py script file.</param>
+        /// <returns>A list of RenpyCommand objects representing the script.</returns>
         public List<RenpyCommand> ParseFromFile(string filePath)
         {
             string rpyCode = File.ReadAllText(filePath);
             return Parse(rpyCode);
         }
 
-        // Method to parse Ren'Py script code
+        /// <summary>
+        /// Parses Ren'Py script code from a string.
+        /// </summary>
+        /// <param name="rpyCode">The Ren'Py script code as a string.</param>
+        /// <returns>A list of RenpyCommand objects representing the script.</returns>
         public List<RenpyCommand> Parse(string rpyCode)
         {
-            // Initial commands list and prepare the root scope
             List<RenpyCommand> commands = new List<RenpyCommand>();
             string[] lines = Regex.Split(rpyCode, "\r\n|\r|\n");
             Stack<Scope> scopeStack = new Stack<Scope>();
-            scopeStack.Push(new Scope(commands));  // Root scope
+
+            // Start with the root scope
+            scopeStack.Push(new Scope(commands));
 
             bool insideMultilineString = false;
             string multiLineStringAccumulator = "";
@@ -32,25 +44,23 @@ namespace RenDisco {
             // Process each line in the script
             foreach (string line in lines)
             {
+                // Calculate indentation level and remove leading whitespace
                 string trimmedLine = line.TrimStart();
                 int rawIndentationLevel = line.Length - trimmedLine.Length;
 
-                // Skip comments and empty lines
+                // Ignore empty and comment lines outside of multiline strings
                 if (!insideMultilineString && (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("#")))
                     continue;
 
+                // Initialize initialIndentation if not already set
                 initialIndentation ??= rawIndentationLevel;
                 int indentationLevel = rawIndentationLevel - initialIndentation.Value;
-
                 scopeStack.Peek().Indentation ??= indentationLevel;
 
-                // Adjust scope based on indentation
-                while (ShouldPopScope(scopeStack, indentationLevel))
-                {
-                    scopeStack.Pop();
-                }
+                // Adjust the active scope based on indentation
+                AdjustActiveScope(scopeStack, indentationLevel);
 
-                // Handle multiline strings
+                // Process potential multiline strings and adjust scope if needed
                 if (insideMultilineString)
                 {
                     if (ProcessMultilineString(line, multilineCharacter, ref insideMultilineString, ref multiLineStringAccumulator, scopeStack.Peek()))
@@ -61,8 +71,8 @@ namespace RenDisco {
                 {
                     continue;
                 }
-
-                // Routing line processing to parse commands based on keywords
+                
+                // Process different Ren'Py command types in the line, and adjust scope if needed
                 if (ParseLabel(trimmedLine, ref scopeStack, indentationLevel)) continue;
                 if (ParseScene(trimmedLine, scopeStack.Peek())) continue;
                 if (ParseDefine(trimmedLine, scopeStack.Peek())) continue;
@@ -79,6 +89,20 @@ namespace RenDisco {
 
             return commands;
         }
+        
+        /// <summary>
+        /// Adjust the active scope based on indentation level and markers.
+        /// </summary>
+        /// <param name="scopeStack">The scope stack.</param>
+        /// <param name="indentationLevel">The current line indentation level.</param>
+        private static void AdjustActiveScope(Stack<Scope> scopeStack, int indentationLevel)
+        {
+            while (ShouldPopScope(scopeStack, indentationLevel))
+            {
+                scopeStack.Pop();
+            }
+        }
+        
 
         #region Scoping and Utility Methods
 
@@ -92,7 +116,7 @@ namespace RenDisco {
         {
             multiLineStringAccumulator += line + "\n";
 
-            if (line.Trim().EndsWith(multilineCharacter))
+            if (multilineCharacter != null && line.Trim().EndsWith(multilineCharacter))
             {
                 insideMultilineString = false;
                 currentScope.Commands.Add(new Dialogue
@@ -237,7 +261,6 @@ namespace RenDisco {
                 {
                     Condition = ExtractAfter(trimmedLine, "elif ").TrimEnd(':')
                 };
-                scopeStack.Pop();  // Close the previous branch within the if-elif structure
                 scopeStack.Peek().Commands.Add(elifCondition);
                 scopeStack.Push(new Scope(elifCondition.Content, elifCondition));
                 return true;

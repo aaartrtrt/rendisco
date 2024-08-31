@@ -13,7 +13,7 @@ namespace RenDisco {
         void ShowImage(string image, string? transition = null);
 
         // Method to show choices to the user, and return the selected index
-        int ShowChoices(List<string> choices);
+        int ShowChoices(List<MenuChoice> choices);
 
         // Method to store, define and get Characters
         void DefineCharacter(string id, string name, string? colour = null);
@@ -25,5 +25,8 @@ namespace RenDisco {
         // Method to store, define and get variables
         void SetVariable(string name, object value);
         object? GetVariable(string name);
+
+        // Method to handle the execution of Define commands directly
+        void ExecuteDefine(Define define);
     }
 }

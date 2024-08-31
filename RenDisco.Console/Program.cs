@@ -95,7 +95,7 @@ label start:
     # screen my_screen:
     #     zorder 100
     #     modal True
-# 
+    #
     #     frame:
     #         background ""images/fancy_frame.png""
     #         xalign 0.5
