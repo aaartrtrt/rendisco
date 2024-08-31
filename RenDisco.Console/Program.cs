@@ -111,15 +111,15 @@ label start:
     jump ending
 
 label ending:
-# Applying a fade-out and stopping the background music
-scene black with fade
-stop music fadeout 1.0
+    # Applying a fade-out and stopping the background music
+    scene black with fade
+    stop music fadeout 1.0
 
-# Final message
-e ""Thanks for playing! This is just the beginning of what you can do with Ren'Py.""
+    # Final message
+    e ""Thanks for playing! This is just the beginning of what you can do with Ren'Py.""
 
-# End of the game (returns to main menu automatically)
-return";
+    # End of the game (returns to main menu automatically)
+    return";
 
         // 1. Parse the script
         RenpyParser parser = new RenpyParser();
