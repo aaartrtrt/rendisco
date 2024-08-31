@@ -1,2 +1,81 @@
-# rendisco
-RenDisco is a C# parser and runtime of a subset of RenPy.
+# RenDisco 🪩🕺📖
+
+RenDisco is a project for .NET to parse and execute scripts written in a subset of Ren'Py - the popular engine for creating visual novels. It allows the integration of Ren'Py-like scripts within C# applications, allowing access to the .NET ecosystem while utilising the easy-to-learn syntax of Ren'Py to create dialogue.
+
+## Features ✨
+
+- **Parsing Support**: Parse Ren'Py-like scripts directly from C#.
+- **Execute Commands**: Seamlessly execute parsed commands using a runtime engine.
+- **Modular Architecture**: Easily extend and adapt the parsing logic and runtime interactions according to your needs.
+
+## Getting Started ✍️
+
+To get started with RenPySharp, clone this repository and build the solution in your preferred .NET environment.
+
+### Prerequisites 📦
+
+- .NET Core 3.1 or higher
+
+### Installation 🔧
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/RenPySharp.git
+   ```
+2. Navigate to the cloned directory and build the project:
+   ```bash
+   cd RenPySharp
+   dotnet build
+   ```
+
+### Usage 🏗️
+
+Below is a simple example of how to use RenPySharp in your project:
+
+1. **Import RenDisco**:
+
+```cs
+using RenDisco;
+```
+
+2. **Prepare your script**: Write your Ren'Py script as a string or load it from a file.
+
+```cs
+string script = @"
+label start:
+    e ""Hello, world!""
+    jump finish
+
+label finish:
+    e ""Goodbye, world!""
+    return
+";
+```
+
+3. **Parse the script**:
+   
+```cs
+RenDisco.RenpyParser parser = new RenDisco.RenpyParser();
+List<RenDisco.RenpyCommand> commands = parser.Parse(script);
+```
+
+4. **Set up the runtime engine**:
+
+```cs
+RenDisco.IRuntimeEngine runtime = new RenDisco.SimpleRuntimeEngine();
+```
+
+5. **Execute**:
+
+```cs
+RenDisco.Play play = new RenDisco.Play(runtime, commands);
+play.Next();
+```
+
+## License 📝
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Based on the work by the [Ren'Py Visual Novel Engine](https://www.renpy.org/).
