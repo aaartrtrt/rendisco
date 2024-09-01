@@ -1,2 +1,6 @@
+# Dot NET
 **/bin
 **/obj
+
+# Unity
+**.meta
