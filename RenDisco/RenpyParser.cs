@@ -85,6 +85,7 @@ namespace RenDisco {
                 if (ParseShowHideCommands(trimmedLine, scopeStack.Peek())) continue;
                 if (ParseMenuChoices(trimmedLine, scopeStack)) continue;
                 if (ParseDialogue(trimmedLine, scopeStack.Peek())) continue;
+                if (ParseNarration(trimmedLine, scopeStack.Peek())) continue;
             }
 
             return commands;
@@ -119,11 +120,7 @@ namespace RenDisco {
             if (multilineCharacter != null && line.Trim().EndsWith(multilineCharacter))
             {
                 insideMultilineString = false;
-                currentScope.Commands.Add(new Dialogue
-                {
-                    Character = currentScope.LastSpeaker,
-                    Text = multiLineStringAccumulator.Trim()
-                });
+                currentScope.Commands.Add(new Dialogue(currentScope.LastSpeaker, multiLineStringAccumulator.Trim()));
                 multilineCharacter = null;
                 multiLineStringAccumulator = "";
                 return true;
@@ -374,23 +371,30 @@ namespace RenDisco {
 
         private static bool ParseDialogue(string trimmedLine, Scope currentScope)
         {
-            // Detect lines beginning with dialogue quotes or a name followed by dialogue in quotes
-            if (trimmedLine.StartsWith("\"") || (trimmedLine.Contains(" ") && trimmedLine.IndexOf('"') > 0))
+            // Detect lines with dialogue (name followed by dialogue text, in quotation marks)
+            if (trimmedLine.Contains(" ") && (trimmedLine.IndexOf('"') > 0))
             {
                 var parts = trimmedLine.Split(new[] { '\"' }, 2, StringSplitOptions.RemoveEmptyEntries);
                 string character = parts[0].Trim();
                 string text = parts[1].Trim().TrimEnd('\"');
                 currentScope.LastSpeaker = character;
 
-                currentScope.Commands.Add(new Dialogue
-                {
-                    Character = character,
-                    Text = text
-                });
+                currentScope.Commands.Add(new Dialogue(character, text));
                 return true;
             }
 
             return false;
+        }
+
+        private static bool ParseNarration(string trimmedLine, Scope currentScope)
+        {
+            if (!trimmedLine.StartsWith('"'))
+                return false;
+            if (!trimmedLine.EndsWith('"'))
+                return false;
+            
+            currentScope.Commands.Add(new Narration(trimmedLine.Trim('"')));
+            return true;
         }
 
         #endregion

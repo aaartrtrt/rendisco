@@ -64,6 +64,9 @@ namespace RenDisco {
                 case Label label:
                     ExecuteLabel(label);
                     break;
+                case Narration narration:
+                    _runtime.ShowNarration(narration.Text);
+                    break;
                 case Dialogue dialogue:
                     _runtime.ShowDialogue(dialogue.Character, dialogue.Text);
                     break;

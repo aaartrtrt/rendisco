@@ -54,21 +54,50 @@ namespace RenDisco {
     }
 
     /// <summary>
+    /// Base class for commands where text is shown.
+    /// </summary>
+    public abstract class ShowTextBase : RenpyCommand
+    {
+        public ShowTextBase(string text)
+        {
+            Text = text;
+        }
+        /// <summary>
+        /// Gets or sets the dialogue text.
+        /// </summary>
+        public string Text { get; set; }
+    }
+
+    /// <summary>
+    /// Represents a narration command where narrative text is shown.
+    /// </summary>
+    public class Narration : ShowTextBase
+    {
+        public Narration(string text)
+            : base(text)
+        {
+            Text = text;
+        }
+        public override string Type => "narration";
+    }
+
+    /// <summary>
     /// Represents a dialogue command where a character speaks.
     /// </summary>
-    public class Dialogue : RenpyCommand
+    public class Dialogue : ShowTextBase
     {
+        public Dialogue(string character, string text)
+            : base(text)
+        {
+            Character = character;
+            Text = text;
+        }
         public override string Type => "dialogue";
         
         /// <summary>
         /// Gets or sets the character speaking the dialogue.
         /// </summary>
         public string Character { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the dialogue text.
-        /// </summary>
-        public string Text { get; set; }
     }
 
     /// <summary>
