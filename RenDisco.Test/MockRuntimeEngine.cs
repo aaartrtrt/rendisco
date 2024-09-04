@@ -75,10 +75,8 @@ namespace RenDisco.Test
             ImageLog.Clear();
         }
 
-        public int ShowChoices(List<MenuChoice> choices)
+        public void ShowChoices(List<MenuChoice> choices)
         {
-            // Mocked choice selection, control this index via testing input
-            return _choiceIndex++;
         }
 
         public void ExecuteDefine(Define define)

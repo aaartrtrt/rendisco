@@ -42,20 +42,12 @@ namespace RenDisco {
         /// </summary>
         /// <param name="choices">List of choice texts.</param>
         /// <returns>The index of the selected choice.</returns>
-        public int ShowChoices(List<MenuChoice> choices)
+        public void ShowChoices(List<MenuChoice> choices)
         {
             for (int i = 0; i < choices.Count; i++)
             {
                 Console.WriteLine($"{i + 1}: {choices[i].OptionText}");
             }
-
-            Console.Write("Choose an option: ");
-            int choice;
-            while (!int.TryParse(Console.ReadLine(), out choice) || choice < 1 || choice > choices.Count)
-            {
-                Console.WriteLine("Invalid choice! Please select a valid option.");
-            }
-            return choice - 1;
         }
 
         /// <summary>

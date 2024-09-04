@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RenDisco;
 
 class Program
 {
     static void Main(string[] args)
     {
-        string filePath = @"
+        string code = @"
 # Ren'Py basic script starts with the label start
 label start:
     # Show the splash screen / logo image
@@ -69,6 +70,8 @@ label start:
 
         l ""Hmm, isn't it better to have a quiet time indoors?""
 
+        jump ending
+
     # Adding a screen displayable
     show text ""One Week Later..."" at truecenter with dissolve
     pause 1
@@ -123,7 +126,7 @@ label ending:
 
         // 1. Parse the script
         RenpyParser parser = new RenpyParser();
-        List<RenpyCommand> commands = parser.Parse(filePath);
+        List<RenpyCommand> commands = parser.Parse(code);
 
         // 2. Create the runtime engine
         IRuntimeEngine runtime = new SimpleRuntimeEngine();
@@ -134,6 +137,24 @@ label ending:
         // 4. Create the Play instance and start the execution
         Play play = new Play(runtime, commands);
 
-        play.Next();
+        bool executionContinues = true;
+        while (executionContinues)
+        {
+            // Check if we need to read a choice from the user
+            if (play.WaitingForInput)
+            {
+                Console.Write("> ");
+                int.TryParse(Console.ReadLine(), out int userChoice);
+
+                // Create a StepContext with the user's choice loaded
+                StepContext stepContext = new StepContext(userChoice - 1);
+                executionContinues = play.Step(stepContext: stepContext);
+            }
+            else
+            {
+                Console.WriteLine("-");
+                executionContinues = play.Step();
+            }
+        }
     }
 }
