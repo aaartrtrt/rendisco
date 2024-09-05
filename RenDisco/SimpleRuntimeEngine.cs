@@ -15,7 +15,8 @@ namespace RenDisco {
         /// <param name="dialogue">The dialogue text.</param>
         public void ShowDialogue(string? character, string dialogue)
         {
-            Console.WriteLine(character == null ? dialogue : $"{character}: {dialogue}");
+            string id = character ?? "";
+            Console.WriteLine(_characters[id] == null ? dialogue : $"{_characters[id]["name"]}: {dialogue}");
         }
 
         /// <summary>
@@ -114,18 +115,29 @@ namespace RenDisco {
         /// <param name="define">The Define command to process.</param>
         public void ExecuteDefine(Define define)
         {
-            if (define.Value.Contains("Character"))
+            if (define.Definition?.MethodName == "Character")
             {
-                string text = define.Value;
-                string characterName = ExtractStringWithinQuotes(text.Substring(text.IndexOf('(') + 1));
-                if (text.Contains("color"))
+                string? characterName = null;
+                string? color = null;
+
+                foreach (ParamPairExpression paramPair in define.Definition.ParamList.Params)
                 {
-                    string color = ExtractStringWithinQuotes(text.Substring(text.IndexOf("color=") + 6));
-                    DefineCharacter(define.Name, characterName, color);
+                    switch (paramPair.ParamName) {
+                        case "name":
+                            characterName = ((StringLiteralExpression)paramPair.ParamValue).Value;
+                            break;
+                        case "color":
+                            color = ((StringLiteralExpression)paramPair.ParamValue).Value;
+                            break;
+                        default:
+                            if (paramPair.ParamValue is StringLiteralExpression)
+                                characterName = ((StringLiteralExpression)paramPair.ParamValue).Value;
+                            break;
+                    }
                 }
-                else
-                {
-                    DefineCharacter(define.Name, characterName);
+
+                if (characterName != null) {
+                    DefineCharacter(define.Name, characterName, color);
                 }
             }
             else

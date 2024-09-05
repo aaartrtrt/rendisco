@@ -155,6 +155,108 @@ namespace RenDisco {
 
         #region Parsing Command Methods
 
+        /// <summary>
+        /// Parses Ren'Py script expressions and returns the appropriate Expression object.
+        /// </summary>
+        /// <param name="expressionText">The Ren'Py script expression text.</param>
+        /// <returns>An Expression object representing the expression.</returns>
+        public static Expression ParseExpression(string expressionText)
+        {
+            string trimmedExpressionText = expressionText.Trim();
+
+            // Check for keywords
+            foreach (string keyword in new[] { "if", "elif", "define" })
+            {
+                if (trimmedExpressionText.StartsWith(keyword))
+                {
+                    return new KeywordExpression { Keyword = keyword };
+                }
+            }
+
+            // Check for a string literal or number literal
+            if (trimmedExpressionText.StartsWith("\"") || trimmedExpressionText.StartsWith("'''"))
+            {
+                return ParseStringLiteralExpression(trimmedExpressionText);
+            }
+
+            // Handle param list expressions
+            if (trimmedExpressionText.StartsWith("(") && trimmedExpressionText.EndsWith(')'))
+            {
+                return ParseParamListExpression(trimmedExpressionText);
+            }
+
+            // Handle method expressions
+            if (Regex.IsMatch(trimmedExpressionText, @"\w+\s*\("))
+            {
+                return ParseMethodExpression(trimmedExpressionText);
+            }
+
+            // Check for non-literal values
+            if (char.IsLetter(trimmedExpressionText[0]))
+            {
+                return ParseNonLiteralExpression(trimmedExpressionText);
+            }
+
+            throw new ArgumentException($"Unknown expression type encountered: {expressionText}");
+        }
+
+        private static StringLiteralExpression ParseStringLiteralExpression(string expressionText)
+        {
+            return new StringLiteralExpression { Value = expressionText.Trim('\"', '\'') };
+        }
+
+        private static NonLiteralExpression ParseNonLiteralExpression(string expressionText)
+        {
+            return new NonLiteralExpression { Value = expressionText };
+        }
+
+        private static ParamListExpression ParseParamListExpression(string expressionText)
+        {
+            var paramPairs = new List<ParamPairExpression>();
+            var paramListText = expressionText.Trim('(', ')');
+            var paramElements = paramListText.Split(',');
+
+            foreach (var element in paramElements)
+            {
+                string[] nameValue = element.Split('=');
+                if (nameValue.Length == 2)
+                {
+                    paramPairs.Add(new ParamPairExpression
+                    {
+                        ParamName = nameValue[0].Trim(),
+                        ParamValue = ParseExpression(nameValue[1])
+                    });
+                }
+                else
+                {
+                    paramPairs.Add(new ParamPairExpression { ParamValue = ParseExpression(nameValue[0]) });
+                }
+            }
+
+            return new ParamListExpression { Params = paramPairs };
+        }
+
+        private static MethodExpression ParseMethodExpression(string expressionText)
+        {
+            var methodMatch = Regex.Match(expressionText, @"(\w+)\s*\((.*)\)");
+            if (methodMatch.Success && methodMatch.Groups.Count == 3)
+            {
+                string methodName = methodMatch.Groups[1].Value;
+                string paramListText = methodMatch.Groups[2].Value;
+                var paramListExpression = ParseParamListExpression(paramListText);
+
+                return new MethodExpression
+                {
+                    MethodName = methodName,
+                    ParamList = paramListExpression as ParamListExpression
+                };
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid method expression encountered: {expressionText}");
+            }
+        }
+
         private static bool ParseLabel(string trimmedLine, ref Stack<Scope> scopeStack, int indentationLevel)
         {
             if (trimmedLine.StartsWith("label "))
@@ -197,11 +299,13 @@ namespace RenDisco {
             {
                 string namePart = trimmedLine.Split("=")[0].Trim();
                 string valuePart = ExtractAfter(trimmedLine, "=").Trim();
+                
 
                 var defineCmd = new Define
                 {
                     Name = ExtractAfter(namePart, "define ").Trim(),
-                    Value = valuePart
+                    Value = valuePart,
+                    Definition = ParseMethodExpression(valuePart)
                 };
                 currentScope.Commands.Add(defineCmd);
                 return true;

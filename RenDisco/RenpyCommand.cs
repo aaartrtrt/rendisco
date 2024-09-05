@@ -159,6 +159,11 @@ namespace RenDisco {
         /// Gets or sets the value to be defined.
         /// </summary>
         public string Value { get; set; }
+
+        /// <summary>
+        /// Gets or sets the right hand value to be defined.
+        /// </summary>
+        public MethodExpression? Definition { get; set; }
     }
 
     /// <summary>
