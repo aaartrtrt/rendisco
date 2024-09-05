@@ -137,8 +137,7 @@ label ending:
         // 4. Create the Play instance and start the execution
         Play play = new Play(runtime, commands);
 
-        bool executionContinues = true;
-        while (executionContinues)
+        while (true)
         {
             // Check if we need to read a choice from the user
             if (play.WaitingForInput)
@@ -148,12 +147,12 @@ label ending:
 
                 // Create a StepContext with the user's choice loaded
                 StepContext stepContext = new StepContext(userChoice - 1);
-                executionContinues = play.Step(stepContext: stepContext);
+                play.Step(stepContext: stepContext);
             }
             else
             {
                 Console.WriteLine("-");
-                executionContinues = play.Step();
+                play.Step();
             }
         }
     }

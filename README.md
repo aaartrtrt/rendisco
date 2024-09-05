@@ -65,11 +65,27 @@ List<RenDisco.RenpyCommand> commands = parser.Parse(script);
 RenDisco.IRuntimeEngine runtime = new RenDisco.SimpleRuntimeEngine();
 ```
 
-5. **Execute**:
+5. **Do a Step loop**:
 
 ```cs
-RenDisco.Play play = new RenDisco.Play(runtime, commands);
-play.Next();
+while (true)
+{
+    // Check if we need to read a choice from the user
+    if (play.WaitingForInput)
+    {
+        Console.Write("> ");
+        int.TryParse(Console.ReadLine(), out int userChoice);
+
+        // Create a StepContext with the user's choice loaded
+        StepContext stepContext = new StepContext(userChoice - 1);
+        play.Step(stepContext: stepContext);
+    }
+    else
+    {
+        Console.WriteLine("-");
+        play.Step();
+    }
+}
 ```
 
 ## License 📝
