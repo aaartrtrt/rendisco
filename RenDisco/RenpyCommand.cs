@@ -53,12 +53,13 @@ namespace RenDisco {
         public string Transition { get; set; }
     }
 
+
     /// <summary>
     /// Represents a dialogue command where a character speaks.
     /// </summary>
-    public class Dialogue : RenpyCommand
+    public class Narrative : RenpyCommand
     {
-        public override string Type => "dialogue";
+        public override string Type => "narrative";
         
         /// <summary>
         /// Gets or sets the character speaking the dialogue.
@@ -69,6 +70,32 @@ namespace RenDisco {
         /// Gets or sets the dialogue text.
         /// </summary>
         public string Text { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Saving Throw.
+        /// </summary>
+        public MethodExpression? SavingThrow { get; set;}
+    }
+
+    /// <summary>
+    /// Represents a dialogue command where a character speaks.
+    /// </summary>
+    public class Dialogue : Narrative
+    {
+        public override string Type => "dialogue";
+    }
+
+    /// <summary>
+    /// Represents a dialogue command where the narrator speaks.
+    /// </summary>
+    public class Narration : Narrative
+    {
+        public override string Type => "show_text";
+        
+        /// <summary>
+        /// Gets or sets the character speaking the dialogue.
+        /// </summary>
+        public string Character => "Narrator";
     }
 
     /// <summary>

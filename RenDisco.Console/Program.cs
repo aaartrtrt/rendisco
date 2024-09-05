@@ -30,6 +30,8 @@ label start:
 
     l ""Hello, everybody! Let's explore what we can do with Ren'Py.""
 
+    ""The Narrator's in on it.""
+
     # Display a Background Image
     scene bg park with dissolve
     
@@ -139,6 +141,8 @@ label ending:
 
         while (true)
         {
+            bool res;
+
             // Check if we need to read a choice from the user
             if (play.WaitingForInput)
             {
@@ -147,13 +151,15 @@ label ending:
 
                 // Create a StepContext with the user's choice loaded
                 StepContext stepContext = new StepContext(userChoice - 1);
-                play.Step(stepContext: stepContext);
+                res = play.Step(stepContext: stepContext);
             }
             else
             {
                 Console.WriteLine("-");
-                play.Step();
+                res = play.Step();
             }
+
+            if (!res) break;
         }
     }
 }

@@ -85,6 +85,7 @@ namespace RenDisco {
                 if (ParseShowHideCommands(trimmedLine, scopeStack.Peek())) continue;
                 if (ParseMenuChoices(trimmedLine, scopeStack)) continue;
                 if (ParseDialogue(trimmedLine, scopeStack.Peek())) continue;
+                if (ParseNarration(trimmedLine, scopeStack.Peek())) continue;
             }
 
             return commands;
@@ -479,7 +480,7 @@ namespace RenDisco {
         private static bool ParseDialogue(string trimmedLine, Scope currentScope)
         {
             // Detect lines beginning with dialogue quotes or a name followed by dialogue in quotes
-            if (trimmedLine.StartsWith("\"") || (trimmedLine.Contains(" ") && trimmedLine.IndexOf('"') > 0))
+            if ((trimmedLine.Contains(" ") && trimmedLine.IndexOf('"') > 0))
             {
                 var parts = trimmedLine.Split(new[] { '\"' }, 2, StringSplitOptions.RemoveEmptyEntries);
                 string character = parts[0].Trim();
@@ -489,6 +490,23 @@ namespace RenDisco {
                 currentScope.Commands.Add(new Dialogue
                 {
                     Character = character,
+                    Text = text
+                });
+                return true;
+            }
+
+            return false;
+        }
+        
+        private static bool ParseNarration(string trimmedLine, Scope currentScope)
+        {
+            // Detect lines beginning with dialogue quotes or a name followed by dialogue in quotes
+            if (trimmedLine.StartsWith("\""))
+            {
+                string text = trimmedLine.Trim('\"');
+
+                currentScope.Commands.Add(new Narration
+                {
                     Text = text
                 });
                 return true;

@@ -123,6 +123,14 @@ namespace RenDisco {
                         this.WaitingForInput = true;
                     }
                     break;
+                case Narration narration:
+                    if (stepContext != null) {
+                        this.WaitingForInput = false;
+                    } else if (!WaitingForInput) {
+                        _runtime.ShowNarration(narration.Text);
+                        this.WaitingForInput = true;
+                    }
+                    break;
                 case Scene scene:
                     _runtime.ShowImage(scene.Image, scene.Transition);
                     break;
@@ -169,6 +177,7 @@ namespace RenDisco {
         {
             if (stepContext?.Choice != null) {
                 int selectedChoice = stepContext.Choice ?? -1;
+                if (selectedChoice == -1) return; 
                 WaitingForInput = false;
                 this._child = new Play(_runtime, menu.Choices[selectedChoice].Response, this);
                 this._child.Step(stepContext: stepContext);

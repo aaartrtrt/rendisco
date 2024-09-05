@@ -69,7 +69,7 @@ namespace RenDisco.Test
 
             // 3. Create the Play instance and start the execution
             Play play = new Play(runtime, commands);
-            play.Next();
+            // play.Next();
 
             // Conduct tests without conditional paths
 
