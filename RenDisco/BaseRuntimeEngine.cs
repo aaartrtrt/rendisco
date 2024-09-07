@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace RenDisco {
-    public class SimpleRuntimeEngine : IRuntimeEngine
+    public class BaseRuntimeEngine : IRuntimeEngine
     {
         private Dictionary<string, object> _variables = new Dictionary<string, object>();
-        private Dictionary<string, Dictionary<string, string>> _characters = new Dictionary<string, Dictionary<string, string>>();
+        private Dictionary<string, Dictionary<string, string?>> _characters = new Dictionary<string, Dictionary<string, string?>>();
 
         /// <summary>
         /// Displays dialogue for a specific character or as narration if no character is provided.
@@ -57,16 +57,19 @@ namespace RenDisco {
         /// <param name="id">The unique identifier for the character.</param>
         /// <param name="name">The display name of the character.</param>
         /// <param name="colour">The optional color associated with the character.</param>
-        public void DefineCharacter(string id, string name, string? colour = null)
+        public void DefineCharacter(string id, Dictionary<string, string?> settings)
         {
-            if (!_characters.ContainsKey(id))
-            {
-                _characters[id] = new Dictionary<string, string>
-                {
-                    { "name", name },
-                    { "colour", colour ?? "#ffffff" }
-                };
-            }
+            _characters[id] = settings;
+        }
+
+        /// <summary>
+        /// Retrieves the settings of a character by its identifier.
+        /// </summary>
+        /// <param name="id">The character's unique identifier.</param>
+        /// <returns>The character's name, or null if not found.</returns>
+        public Dictionary<string, string?>? GetCharacter(string id)
+        {
+            return _characters.ContainsKey(id) ? _characters[id] : null;
         }
 
         /// <summary>
@@ -117,27 +120,28 @@ namespace RenDisco {
         {
             if (define.Definition?.MethodName == "Character")
             {
-                string? characterName = null;
-                string? color = null;
+                Dictionary<string, string?> characterSettings = new Dictionary<string, string?>();
 
                 foreach (ParamPairExpression paramPair in define.Definition.ParamList.Params)
                 {
                     switch (paramPair.ParamName) {
                         case "name":
-                            characterName = ((StringLiteralExpression)paramPair.ParamValue).Value;
-                            break;
                         case "color":
-                            color = ((StringLiteralExpression)paramPair.ParamValue).Value;
+                        case "portrait":
+                            characterSettings[paramPair.ParamName] = ((StringLiteralExpression)paramPair.ParamValue).Value;
                             break;
                         default:
                             if (paramPair.ParamValue is StringLiteralExpression)
-                                characterName = ((StringLiteralExpression)paramPair.ParamValue).Value;
+                                characterSettings["name"] = ((StringLiteralExpression)paramPair.ParamValue).Value;
                             break;
                     }
                 }
 
-                if (characterName != null) {
-                    DefineCharacter(define.Name, characterName, color);
+                if (characterSettings.ContainsKey("name")) {
+                    DefineCharacter(
+                        define.Name,
+                        characterSettings
+                    );
                 }
             }
             else

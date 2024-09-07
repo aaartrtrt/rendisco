@@ -9,6 +9,13 @@ namespace RenDisco
         public abstract string Type { get; }
     }
 
+    public class IndentationExpression: Expression
+    {
+        public override string Type => "keyword";
+
+        public string Keyword { get; set; }
+    }
+
     public class KeywordExpression : Expression
     {
         public override string Type => "keyword";
