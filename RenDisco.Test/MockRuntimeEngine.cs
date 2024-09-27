@@ -107,5 +107,10 @@ namespace RenDisco.Test
             if (match.Success) return match.Groups[1].Value;
             throw new ArgumentException("Provided string does not contain quotes or valid quoted text.");
         }
+
+        public void DefineCharacter(string id, Dictionary<string, string?> settings)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
