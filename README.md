@@ -1,5 +1,7 @@
 # RenDisco 🪩🕺📖
 
+[![.NET](https://github.com/aaartrtrt/rendisco/actions/workflows/dotnet.yml/badge.svg)](https://github.com/aaartrtrt/rendisco/actions/workflows/dotnet.yml)
+
 RenDisco is a project for .NET to parse and execute scripts written in a subset of Ren'Py - the popular engine for creating visual novels. It allows the integration of Ren'Py-like scripts within C# applications, allowing access to the .NET ecosystem while utilising the easy-to-learn syntax of Ren'Py to create dialogue.
 
 ## Features ✨
