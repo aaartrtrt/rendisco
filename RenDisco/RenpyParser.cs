@@ -388,10 +388,17 @@ namespace RenDisco {
 
         private static bool ParsePause(string trimmedLine, Scope currentScope)
         {
-            if (trimmedLine.StartsWith("pause "))
+            if (trimmedLine.StartsWith("pause"))
             {
                 var parts = trimmedLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                currentScope.Commands.Add(new Pause { Duration = double.Parse(parts[1]) });
+
+                Pause pause = new Pause();
+
+                if (parts.Length > 0)
+                    pause.Duration = double.Parse(parts[1]);
+
+                currentScope.Commands.Add(pause);
+
                 return true;
             }
 

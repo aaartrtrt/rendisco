@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace RenDisco {
     public class BaseRuntimeEngine : IRuntimeEngine
@@ -36,6 +37,26 @@ namespace RenDisco {
         public void ShowImage(string image, string? transition = null)
         {
             Console.WriteLine(transition == null ? $"Show Image: {image}" : $"Show Image: {image} with {transition} transition");
+        }
+
+        public void HideImage(string image, string? transition = null)
+        {
+            Console.WriteLine(transition == null ? $"Hide Image: {image}" : $"Hide Image: {image} with {transition} transition");
+        }
+
+        public void PlayMusic(string file, double? fadein)
+        {
+            Console.WriteLine(fadein == default ? $"Play Music: {file}" : $"Play Music: {file} with fadein of {fadein} second(s)");
+        }
+
+        public void StopMusic(double? fadeout)
+        {
+            Console.WriteLine(fadeout == default ? $"Stop Music" : $"Stop Music: with fadeout of {fadeout} second(s)");
+        }
+
+        public void Pause(double? duration)
+        {
+            Console.WriteLine(duration == default ? $"Pause" : $"Pause: {duration} second(s)");
         }
 
         /// <summary>

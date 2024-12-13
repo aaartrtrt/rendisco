@@ -275,7 +275,7 @@ namespace RenDisco {
         /// <summary>
         /// Gets or sets the duration of the pause in seconds.
         /// </summary>
-        public double Duration { get; set; }
+        public double? Duration { get; set; }
     }
 
     /// <summary>
