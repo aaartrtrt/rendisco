@@ -181,7 +181,7 @@ namespace RenDisco {
             }
 
             // Handle param list expressions
-            if (trimmedExpressionText.StartsWith("(") && trimmedExpressionText.EndsWith(')'))
+            if (trimmedExpressionText.StartsWith("(") && trimmedExpressionText.EndsWith(")"))
             {
                 return ParseParamListExpression(trimmedExpressionText);
             }
@@ -298,7 +298,7 @@ namespace RenDisco {
         {
             if (trimmedLine.StartsWith("define "))
             {
-                string namePart = trimmedLine.Split("=")[0].Trim();
+                string namePart = trimmedLine.Split('=')[0].Trim();
                 string valuePart = ExtractAfter(trimmedLine, "=").Trim();
                 
 
@@ -319,7 +319,7 @@ namespace RenDisco {
         {
             if (trimmedLine.StartsWith("$ "))
             {
-                string namePart = trimmedLine.Split("=")[0].Trim();
+                string namePart = trimmedLine.Split('=')[0].Trim();
                 string valuePart = ExtractAfter(trimmedLine, "=");
 
                 var defineCmd = new Define
