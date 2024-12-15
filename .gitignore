@@ -1,6 +1,7 @@
 # Dot NET
 **/bin
 **/obj
+.vs
 
 # Unity
 *.meta

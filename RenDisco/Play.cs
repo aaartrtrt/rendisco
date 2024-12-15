@@ -152,6 +152,18 @@ namespace RenDisco {
                 case Jump jump:
                     ExecuteJump(jump.Label, stepContext);
                     break;
+                case PlayMusic playMusic:
+                    _runtime.PlayMusic(playMusic.File, playMusic.FadeIn);
+                    break;
+                case Pause pause:
+                    _runtime.Pause(pause.Duration);
+                    break;
+                case StopMusic stopMusic:
+                    _runtime.StopMusic(stopMusic.FadeOut);
+                    break;
+                case Hide hide:
+                    _runtime.HideImage(hide.Image, hide.Transition);
+                    break;
                 default:
                     Console.WriteLine($"Unknown command type encountered: {command.Type}");
                     break;
@@ -175,15 +187,31 @@ namespace RenDisco {
         /// <returns>The result of the run, whether to break or not.</returns>
         private void ExecuteMenu(Menu menu, StepContext? stepContext = null)
         {
-            if (stepContext?.Choice != null) {
-                int selectedChoice = stepContext.Choice ?? -1;
-                if (selectedChoice == -1) return; 
-                WaitingForInput = false;
-                this._child = new Play(_runtime, menu.Choices[selectedChoice].Response, this);
-                this._child.Step(stepContext: stepContext);
-            } else if (!WaitingForInput) {
-                _runtime.ShowChoices(menu.Choices);
-                WaitingForInput = true;
+            try
+            {
+                if (stepContext?.Choice != null)
+                {
+                    int selectedChoice = stepContext.Choice ?? -1;
+                    if (selectedChoice == -1) return;
+                    WaitingForInput = false;
+                    this._child = new Play(_runtime, menu.Choices[selectedChoice].Response, this);
+                    this._child.Step(stepContext: stepContext);
+                }
+                else if (!WaitingForInput)
+                {
+                    _runtime.ShowChoices(menu.Choices);
+                    WaitingForInput = true;
+                }
+            }
+            catch(Exception exception)
+            {
+                if (exception is ArgumentOutOfRangeException)
+                {
+                    Console.WriteLine($"Unknown dialogue option: {stepContext?.Choice}");
+                    return;
+                }
+
+                Console.WriteLine($"Unhandled Exception: {exception.StackTrace}");
             }
         }
 

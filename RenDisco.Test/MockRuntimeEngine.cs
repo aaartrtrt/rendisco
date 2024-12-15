@@ -110,7 +110,27 @@ namespace RenDisco.Test
 
         public void DefineCharacter(string id, Dictionary<string, string?> settings)
         {
-            throw new NotImplementedException();
+
+        }
+
+        public void HideImage(string image, string? transition = null)
+        {
+            
+        }
+
+        public void PlayMusic(string file, double? fadein)
+        {
+
+        }
+
+        public void StopMusic(double? fadeout)
+        {
+
+        }
+
+        public void Pause(double? duration)
+        {
+
         }
     }
 }
