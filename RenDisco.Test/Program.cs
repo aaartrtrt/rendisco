@@ -134,22 +134,16 @@ namespace RenDisco.Test
         // Test method for asserting music started
         static void AssertMusicPlay(MockRuntimeEngine runtime, int index, string expectedMusicFile, double fadeInDuration)
         {
-            Console.WriteLine("Music play asserted correctly.");
-            // You can extend the MockRuntimeEngine to log music plays/fades for asserts
         }
 
         // Test method for asserting music stopped with fadeout
         static void AssertMusicStop(MockRuntimeEngine runtime, int index, double fadeOutDuration)
         {
-            Console.WriteLine("Music stop asserted correctly.");
-            // You can extend the MockRuntimeEngine to log music stops/fades for asserts
         }
 
         // Test method to confirm a jump to label occurred as expected
         static void AssertJump(MockRuntimeEngine runtime, string expectedLabel)
         {
-            Console.WriteLine($"Jump to label '{expectedLabel}' validated.");
-            // In a more complex system, track jumps to validate this
         }
     }
 }
