@@ -61,7 +61,7 @@ namespace RenDisco.Test
         return";
 
             // 1. Parse the script
-            RenpyParser parser = new RenpyParser();
+            RendiscoParser parser = new RendiscoParser();
             List<RenpyCommand> commands = parser.Parse(rpyScript);
 
             // 2. Create the mock runtime engine

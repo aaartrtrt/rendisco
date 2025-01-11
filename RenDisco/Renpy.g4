@@ -30,6 +30,7 @@ tokens {
 @lexer::header {
   using AntlrDenter;
 }
+
 @lexer::members {
   private DenterHelper denter;
 
@@ -48,8 +49,8 @@ tokens {
   }
 }
 
-script:
-  (statement NL)*;
+block:
+  statement NL (block)?;
 
 statement:
   label_def
@@ -69,7 +70,7 @@ statement:
   ;
 
 label_def:
-  LABEL IDENT (argument)? ':' NL INDENT statement* DEDENT
+  LABEL IDENT (argument)? ':' (INDENT block DEDENT)?
   ;
 
 character_def:
@@ -101,11 +102,11 @@ call_def:
   ;
 
 menu_def:
-  MENU ':' (menu_option NL)* DEDENT
+  MENU ':' NL INDENT (menu_option)* DEDENT
   ;
 
 menu_option:
-  STRING ':' statement
+  STRING ':' NL INDENT block DEDENT
   ;
 
 default_def:
@@ -133,9 +134,9 @@ argument:
   ;
 
 conditional_block:
-  IF expression ':' NL INDENT statement* DEDENT
-  (ELIF expression ':' NL INDENT statement* DEDENT)*
-  (ELSE ':' NL INDENT statement* DEDENT)?
+  IF expression ':' INDENT block DEDENT
+  (ELIF expression ':' INDENT block DEDENT)*
+  (ELSE ':' INDENT block DEDENT)?
   ;
 
 expression:
