@@ -110,7 +110,6 @@ namespace RenDisco {
         /// <returns>Boolean indicating if execution should continue.</returns>
         private bool ExecuteCommand(RenpyCommand command, StepContext? stepContext = null)
         {
-            Console.WriteLine(command.Type);
             switch (command)
             {
                 case Label label:
