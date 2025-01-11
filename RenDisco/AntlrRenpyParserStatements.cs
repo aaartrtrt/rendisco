@@ -150,8 +150,10 @@ namespace RenDisco {
 
         public override object VisitConditional_block([NotNull] RenpyParser.Conditional_blockContext context)
         {
-            var conditional_block = new IfCondition();
+            var conditional_block = new IfCondition { Condition = context.expression().GetText() };
+            conditional_block.Condition = context.expression().GetText();
             conditional_block.Content = (List<RenpyCommand>)Visit(context.block());
+
             foreach (var elifBlock in context.elif_block())
             {
                 conditional_block.ElifConditions.Add((ElifCondition)Visit(elifBlock));
@@ -168,20 +170,14 @@ namespace RenDisco {
         public override object VisitElif_block([NotNull] RenpyParser.Elif_blockContext context)
         {
             var elifCondition = new ElifCondition { Condition = context.expression().GetText() };
-            if (context.block() != null)
-            {
-                elifCondition.Content.AddRange((List<RenpyCommand>)Visit(context.block()));
-            }
+            elifCondition.Content = (List<RenpyCommand>)Visit(context.block());
             return elifCondition;
         }
 
         public override object VisitElse_block([NotNull] RenpyParser.Else_blockContext context)
         {
             var elseCondition = new ElseCondition();
-            if (context.block() != null)
-            {
-                elseCondition.Content.AddRange((List<RenpyCommand>)Visit(context.block()));
-            }
+            elseCondition.Content =(List<RenpyCommand>)Visit(context.block());
             return elseCondition;
         }
 

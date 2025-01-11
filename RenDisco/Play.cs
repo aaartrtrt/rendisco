@@ -110,6 +110,7 @@ namespace RenDisco {
         /// <returns>Boolean indicating if execution should continue.</returns>
         private bool ExecuteCommand(RenpyCommand command, StepContext? stepContext = null)
         {
+            Console.WriteLine(command.Type);
             switch (command)
             {
                 case Label label:
@@ -195,7 +196,7 @@ namespace RenDisco {
                     if (selectedChoice == -1) return;
                     WaitingForInput = false;
                     this._child = new Play(_runtime, menu.Choices[selectedChoice].Response, this);
-                    this._child.Step(stepContext: stepContext);
+                    this._child.Step();
                 }
                 else if (!WaitingForInput)
                 {
@@ -205,6 +206,7 @@ namespace RenDisco {
             }
             catch(Exception exception)
             {
+                WaitingForInput = true;
                 if (exception is ArgumentOutOfRangeException)
                 {
                     Console.WriteLine($"Unknown dialogue option: {stepContext?.Choice}");
