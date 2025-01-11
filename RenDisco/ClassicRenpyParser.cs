@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,7 +8,7 @@ namespace RenDisco {
     /// <summary>
     /// Parses Ren'Py script code and creates a list of RenpyCommand objects to represent the script.
     /// </summary>
-    public class RenpyParser
+    public class ClassicRenpyParser : IRenpyParser
     {
         /// <summary>
         /// Parses a script from a file by file path.

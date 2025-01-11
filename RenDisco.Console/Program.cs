@@ -127,7 +127,7 @@ label ending:
     return";
 
         // 1. Parse the script
-        RenpyParser parser = new RenpyParser();
+        ClassicRenpyParser parser = new ClassicRenpyParser();
         List<RenpyCommand> commands = parser.Parse(code);
 
         // 2. Create the runtime engine
