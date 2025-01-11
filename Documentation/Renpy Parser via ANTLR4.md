@@ -50,15 +50,6 @@ tokens {
 
 These extensions firstly imports the `AntlrDenter` into the lexer, and injects the `DenterHelper` logic into the lexer to handle indentation.
 
-### Command handling
-
-To match the preexisting Expressions syntax we have pre-ANTLR, we need to get a list of expressions. As it turns out, it's a bit hard to do that with the Visitors syntax, so a command `block` is optionally linked to another command block, which allows us to compile that list of commands in our Visitor class implementation.
-
-```antlr4
-block:
-  statement NL (block)?;
-```
-
 ## Regenerating the ANTLR Code
 
 ### Prerequisites
