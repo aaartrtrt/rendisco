@@ -16,7 +16,7 @@ namespace RenDisco {
         public override object VisitLabel_def([NotNull] RenpyParser.Label_defContext context)
         {
             string labelName = context.IDENT().GetText();
-            string? argument = context.argument()?.expression()?.GetText();
+            // Deal with arguments
             var label = new Label { Name = labelName /*, Argument = argument*/ };
             if (context.block() != null)
             {
@@ -28,7 +28,7 @@ namespace RenDisco {
         public override object VisitCharacter_def([NotNull] RenpyParser.Character_defContext context)
         {
             string name = context.IDENT().GetText();
-            string characterName = context.CHARACTER().GetText();
+            string characterName = context.STRING(0).GetText();
             string stringValue = context.STRING(0).GetText().Trim('"');
             string? color = context.STRING(1)?.GetText().Trim('"');
 
@@ -51,6 +51,21 @@ namespace RenDisco {
             };
         }
 
+
+        public override object VisitAssignment([NotNull] RenpyParser.AssignmentContext context)
+        {
+            string name = context.IDENT().GetText();
+            string value = context.expression().GetText();
+
+            return new Define
+            {
+                Name = name,
+                Value = value
+            };
+        }
+
+        
+
         public override object VisitScene_def([NotNull] RenpyParser.Scene_defContext context)
         {
             return new Scene { Image = context.IDENT().GetText() };
@@ -58,15 +73,15 @@ namespace RenDisco {
 
         public override object VisitPause_def([NotNull] RenpyParser.Pause_defContext context)
         {
-            return new Pause { Duration = double.Parse(context.INT().GetText()) };
+            return new Pause { Duration = double.Parse(context.NUMBER().GetText()) };
         }
 
         public override object VisitPlay_music_def([NotNull] RenpyParser.Play_music_defContext context)
         {
             var playMusic = new PlayMusic { File = context.STRING().GetText().Trim('"') };
-            if (context.FLOAT() != null)
+            if (context.NUMBER() != null)
             {
-                playMusic.FadeIn = float.Parse(context.FLOAT().GetText());
+                playMusic.FadeIn = float.Parse(context.NUMBER().GetText());
             }
             return playMusic;
         }
@@ -74,9 +89,9 @@ namespace RenDisco {
         public override object VisitStop_music_def([NotNull] RenpyParser.Stop_music_defContext context)
         {
             var stopMusic = new StopMusic();
-            if (context.FLOAT() != null)
+            if (context.NUMBER() != null)
             {
-                stopMusic.FadeOut = float.Parse(context.FLOAT().GetText());
+                stopMusic.FadeOut = float.Parse(context.NUMBER().GetText());
             }
             return stopMusic;
         }

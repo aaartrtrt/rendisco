@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 
 namespace RenDisco
 {
@@ -42,14 +43,17 @@ namespace RenDisco
             return (List<RenpyCommand>)Visit(context);
         }
 
+        public override object Visit(IParseTree tree)
+        {
+            return base.Visit(tree);
+        }
+
         public override object VisitBlock([NotNull] RenpyParser.BlockContext context)
         {
-            var commands = new List<RenpyCommand>
-            {
-                (RenpyCommand)Visit(context.statement())
-            };
-
-            commands.AddRange((List<RenpyCommand>)Visit(context.block()));
+            List<RenpyCommand> commands = context.statement()
+                .Select(statement => (RenpyCommand)Visit(statement))
+                .Where(command => command != null)
+                .ToList();
 
             return commands;
         }

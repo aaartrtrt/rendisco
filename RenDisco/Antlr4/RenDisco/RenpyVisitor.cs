@@ -134,6 +134,12 @@ public interface IRenpyVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitCharacter_ref([NotNull] RenpyParser.Character_refContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="RenpyParser.aguments"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAguments([NotNull] RenpyParser.AgumentsContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="RenpyParser.argument"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -157,6 +163,12 @@ public interface IRenpyVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitElse_block([NotNull] RenpyParser.Else_blockContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="RenpyParser.assignment"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitAssignment([NotNull] RenpyParser.AssignmentContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="RenpyParser.expression"/>.
 	/// </summary>

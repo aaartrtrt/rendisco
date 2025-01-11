@@ -3,5 +3,8 @@
 **/obj
 .vs
 
+# Antlr Linter
+**/.antlr
+
 # Unity
 *.meta

@@ -58,7 +58,7 @@ label start:
         e ""Let's do something fun in this lively place!""
 
         # Show an expression change of the character
-        show ella happy at left with moveinleft
+        # show ella happy at left with moveinleft
 
         e ""Look! I'm so happy now!""
 
@@ -75,11 +75,11 @@ label start:
         jump ending
 
     # Adding a screen displayable
-    show text ""One Week Later..."" at truecenter with dissolve
+    # show text ""One Week Later..."" at truecenter with dissolve
     pause 1
 
     # Removing the text
-    hide text with dissolve
+    # hide text with dissolve
 
     # Using transitions again
     scene bg bedroom with dissolve
@@ -92,11 +92,11 @@ label start:
     #         action Show(""my_screen"")
 
     # Display the button on the main screen
-    show screen my_button
+    # show screen my_button
 
     e ""Click that button to see something special.""
 
-    # # Custom screen to be shown on button click
+    # # Custom screen to be # shown on button click
     # screen my_screen:
     #     zorder 100
     #     modal True
@@ -127,7 +127,7 @@ label ending:
     return";
 
         // 1. Parse the script
-        ClassicRenpyParser parser = new ClassicRenpyParser();
+        AntlrRenpyParser parser = new AntlrRenpyParser();
         List<RenpyCommand> commands = parser.Parse(code);
 
         // 2. Create the runtime engine

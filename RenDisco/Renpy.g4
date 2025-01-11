@@ -3,15 +3,7 @@ grammar Renpy;
 tokens {
   INDENT,
   DEDENT,
-  LABEL,
-  DEFINE,
-  CHARACTER,
-  COLOR,
-  SCENE,
   WITH,
-  PAUSE,
-  PLAY,
-  MUSIC,
   FADEIN,
   FADEOUT,
   JUMP,
@@ -19,10 +11,6 @@ tokens {
   RETURN,
   MENU,
   DEFAULT,
-  STOP,
-  IF,
-  ELIF,
-  ELSE,
   TRUE,
   FALSE
 }
@@ -50,7 +38,7 @@ tokens {
 }
 
 block:
-  statement NL (block)?;
+  statement (NL* statement)*;
 
 statement:
   label_def
@@ -64,57 +52,63 @@ statement:
   | menu_def
   | default_def
   | return_def
+  | assignment
   | dialogue
   | narration
   | conditional_block
   ;
 
 label_def:
-  LABEL IDENT (argument)? ':' (INDENT block DEDENT)?
+  'label' IDENT (aguments)? ':' (INDENT block DEDENT)?
   ;
 
 character_def:
-  DEFINE IDENT '=' CHARACTER '(' STRING ')' (COLOR '(' STRING ')' )?
+  'define' IDENT '=' 'Character' '(' STRING ',' ( 'color' '=' STRING ')' )?
   ;
 
 scene_def:
-  SCENE 'bg' IDENT // (WITH dissolve)? TODO: Implement transitions
+  'scene' 'bg' IDENT ('with' (
+    'dissolve'
+    | 'fade'))? //TODO: Implement transitions
   ;
 
 pause_def:
-  PAUSE INT
+  'pause' NUMBER
   ;
 
 play_music_def:
-  PLAY MUSIC STRING (FADEIN FLOAT)?
+  'play music' STRING ('fadein' NUMBER)?
   ;
 
 stop_music_def:
-  STOP MUSIC (FADEOUT FLOAT)?
+  'stop music' ('fadeout' NUMBER)?
   ;
 
 jump_def:
-  JUMP IDENT (argument)?
+  'jump' IDENT (aguments)?
   ;
 
 call_def:
-  CALL IDENT (argument)?
+  'call' IDENT (aguments)?
   ;
 
 menu_def:
-  MENU ':' NL INDENT (menu_option)* DEDENT
+  'menu' ':'
+  INDENT
+  (menu_option)*
+  DEDENT
   ;
 
 menu_option:
-  STRING ':' NL INDENT block DEDENT
+  STRING ':' INDENT block DEDENT
   ;
 
 default_def:
-  DEFAULT IDENT '=' expression
+  'default' IDENT '=' expression
   ;
 
 return_def:
-  RETURN
+  'return'
   ;
 
 dialogue:
@@ -129,27 +123,34 @@ character_ref:
   IDENT
   ;
 
+aguments:
+  '(' argument (',' argument)* ')'
+  ;
+
 argument:
-  expression ',' argument
+  (IDENT '=')? expression   // Optional parameter hNUMBERing
   ;
 
 conditional_block:
-  IF expression ':' INDENT block DEDENT
+  'if' expression ':' INDENT block DEDENT
   (elif_block)*
   (else_block)?
   ;
 
 elif_block:
-  ELIF expression ':' INDENT block DEDENT
+  'elif' expression ':' INDENT block DEDENT
   ;
 
 else_block:
-  ELSE ':' INDENT block DEDENT
+  'else' ':' INDENT block DEDENT
+  ;
+
+assignment:
+  '$' IDENT '=' expression
   ;
 
 expression:
-  INT
-  | FLOAT
+  NUMBER
   | STRING
   | IDENT
   | expression ('+'|'-'|'*'|'/') expression 
@@ -165,14 +166,14 @@ IDENT: [a-zA-Z_][a-zA-Z0-9_]*;
 
 STRING: '"' .*? '"'; // Simple string matching (improve for escaping)
 
-FLOAT: 
+NUMBER: 
   [0-9]+ ('.' [0-9]+)? 
   | '.' [0-9]+ 
+  | [0-9]+
   ;
 
-INT: [0-9]+;
-
-NL: ('\r'? '\n' ' '*); // Note the ' '*
+NL:
+  (' '* '\r'? '\n' ' '*); // Note the ' '*
 
 WS: [ \t]+ -> skip;
 
