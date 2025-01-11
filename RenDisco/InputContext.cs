@@ -1,9 +1,9 @@
 namespace RenDisco {
-    public class StepContext {
+    public class InputContext {
         public int? Choice {get; set;}
         public bool Proceed {get; set;}
 
-        public StepContext (int? choice = null) {
+        public InputContext (int? choice = null) {
             Choice = choice;
             Proceed = true;
         }

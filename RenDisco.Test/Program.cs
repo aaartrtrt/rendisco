@@ -62,7 +62,7 @@ namespace RenDisco.Test
 
             // 1. Parse the script
             AntlrRenpyParser parser = new AntlrRenpyParser();
-            List<RenpyCommand> commands = parser.Parse(rpyScript);
+            List<Command> commands = parser.Parse(rpyScript);
 
             // 2. Create the mock runtime engine
             MockRuntimeEngine runtime = new MockRuntimeEngine();

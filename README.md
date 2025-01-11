@@ -8,7 +8,6 @@ RenDisco is a project for .NET to parse and execute scripts written in a subset 
 
 - **Parsing Support**: Parse Ren'Py-like scripts directly from C#.
 - **Execute Commands**: Seamlessly execute parsed commands using a runtime engine.
-- **Modular Architecture**: Easily extend and adapt the parsing logic and runtime interactions according to your needs.
 
 ## Getting Started ✍️
 
@@ -29,6 +28,8 @@ To get started with RenDisco, clone this repository and build the solution in yo
    cd RenDisco
    dotnet build
    ```
+
+See [Documentation/Renpy Parser via ANTLR4.md](Documentation/Renpy Parser via ANTLR4.md) for notes on updating the language grammar.
 
 ### Usage 🏗️
 
@@ -57,8 +58,8 @@ label finish:
 3. **Parse the script**:
    
 ```cs
-Rendisco.IRenpyParser parser = new AntlrRenpyParser();
-Rendisco.List<RenpyCommand> commands = parser.Parse(code);
+Rendisco.IRenpyParser parser = new Rendisco.AntlrRenpyParser();
+Rendisco.List<Rendisco.Command> commands = parser.Parse(code);
 ```
 
 4. **Set up the runtime engine**:
@@ -79,7 +80,7 @@ while (true)
         int.TryParse(Console.ReadLine(), out int userChoice);
 
         // Create a StepContext with the user's choice loaded
-        StepContext stepContext = new StepContext(userChoice - 1);
+        InputContext stepContext = new InputContext(userChoice - 1);
         play.Step(stepContext: stepContext);
     }
     else

@@ -4,7 +4,7 @@ namespace RenDisco {
     /// <summary>
     /// Base abstract class for all types of Renpy commands.
     /// </summary>
-    public abstract class RenpyCommand
+    public abstract class Command
     {
         /// <summary>
         /// Gets the type of command.
@@ -15,7 +15,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a label command which acts as a marker for jump commands.
     /// </summary>
-    public class Label : RenpyCommand
+    public class Label : Command
     {
         public override string Type => "label";
         
@@ -32,13 +32,13 @@ namespace RenDisco {
         /// <summary>
         /// Gets or sets the list of commands under this label.
         /// </summary>
-        public List<RenpyCommand> Commands { get; set; } = new List<RenpyCommand>();
+        public List<Command> Commands { get; set; } = new List<Command>();
     }
 
     /// <summary>
     /// Represents a scene change command, potentially with a transition.
     /// </summary>
-    public class Scene : RenpyCommand
+    public class Scene : Command
     {
         public override string Type => "scene";
         
@@ -57,7 +57,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a dialogue command where a character speaks.
     /// </summary>
-    public class Narrative : RenpyCommand
+    public class Narrative : Command
     {
         public override string Type => "narrative";
         
@@ -101,7 +101,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a menu command with multiple choices for the player.
     /// </summary>
-    public class Menu : RenpyCommand
+    public class Menu : Command
     {
         public override string Type => "menu";
         
@@ -114,7 +114,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a single choice within a menu.
     /// </summary>
-    public class MenuChoice : RenpyCommand
+    public class MenuChoice : Command
     {
         public override string Type => "menu_choice";
         
@@ -126,13 +126,13 @@ namespace RenDisco {
         /// <summary>
         /// Gets or sets the list of commands to execute if this choice is selected.
         /// </summary>
-        public List<RenpyCommand> Response { get; set; } = new List<RenpyCommand>();
+        public List<Command> Response { get; set; } = new List<Command>();
     }
 
     /// <summary>
     /// Represents an if-condition command to execute commands based on a condition.
     /// </summary>
-    public class IfCondition : RenpyCommand
+    public class IfCondition : Command
     {
         public override string Type => "if";
         
@@ -148,13 +148,13 @@ namespace RenDisco {
         /// <summary>
         /// Gets or sets the list of commands to execute if the condition is true.
         /// </summary>
-        public List<RenpyCommand> Content { get; set; } = new List<RenpyCommand>();
+        public List<Command> Content { get; set; } = new List<Command>();
     }
 
     /// <summary>
     /// Represents an elif-condition command to execute commands based on a condition (part of if-elif-else chain).
     /// </summary>
-    public class ElifCondition : RenpyCommand
+    public class ElifCondition : Command
     {
         public override string Type => "elif";
         
@@ -166,27 +166,27 @@ namespace RenDisco {
         /// <summary>
         /// Gets or sets the list of commands to execute if the condition is true.
         /// </summary>
-        public List<RenpyCommand> Content { get; set; } = new List<RenpyCommand>();
+        public List<Command> Content { get; set; } = new List<Command>();
     }
 
 
     /// <summary>
     /// Represents an elif-condition command to execute commands based on a condition (part of if-elif-else chain).
     /// </summary>
-    public class ElseCondition : RenpyCommand
+    public class ElseCondition : Command
     {
         public override string Type => "else";
         
         /// <summary>
         /// Gets or sets the list of commands to execute if the condition is true.
         /// </summary>
-        public List<RenpyCommand> Content { get; set; } = new List<RenpyCommand>();
+        public List<Command> Content { get; set; } = new List<Command>();
     }
 
     /// <summary>
     /// Represents a define command to declare characters or variables.
     /// </summary>
-    public class Define : RenpyCommand
+    public class Define : Command
     {
         public override string Type => "define";
         
@@ -214,7 +214,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a command to play music with an optional fade-in effect.
     /// </summary>
-    public class PlayMusic : RenpyCommand
+    public class PlayMusic : Command
     {
         public override string Type => "play_music";
         
@@ -232,7 +232,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a command to stop playing music with an optional fade-out effect.
     /// </summary>
-    public class StopMusic : RenpyCommand
+    public class StopMusic : Command
     {
         public override string Type => "stop_music";
         
@@ -245,7 +245,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a command to show an image on the screen.
     /// </summary>
-    public class Show : RenpyCommand
+    public class Show : Command
     {
         public override string Type => "show";
         
@@ -268,7 +268,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a command to hide an image from the screen.
     /// </summary>
-    public class Hide : RenpyCommand
+    public class Hide : Command
     {
         public override string Type => "hide";
         
@@ -286,7 +286,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a pause command to pause the execution for a specified duration.
     /// </summary>
-    public class Pause : RenpyCommand
+    public class Pause : Command
     {
         public override string Type => "pause";
         
@@ -299,7 +299,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a jump command to jump to a specified label.
     /// </summary>
-    public class Jump : RenpyCommand
+    public class Jump : Command
     {
         public override string Type => "jump";
         
@@ -313,7 +313,7 @@ namespace RenDisco {
     /// <summary>
     /// Represents a jump command to jump to a specified label.
     /// </summary>
-    public class Return : RenpyCommand
+    public class Return : Command
     {
         public override string Type => "return";
     }

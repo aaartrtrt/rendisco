@@ -19,7 +19,7 @@ namespace RenDisco
         /// </summary>
         /// <param name="filePath">Path to the Ren'Py script file.</param>
         /// <returns>A list of RenpyCommand objects representing the script.</returns>
-        public List<RenpyCommand> ParseFromFile(string filePath)
+        public List<Command> ParseFromFile(string filePath)
         {
             string rpyCode = File.ReadAllText(filePath);
             return Parse(rpyCode);
@@ -30,7 +30,7 @@ namespace RenDisco
         /// </summary>
         /// <param name="rpyCode">The Ren'Py script code as a string.</param>
         /// <returns>A list of RenpyCommand objects representing the script.</returns>
-        public List<RenpyCommand> Parse(string rpyCode)
+        public List<Command> Parse(string rpyCode)
         {
             // Parse the input.
             AntlrInputStream inputStream = new AntlrInputStream(rpyCode);
@@ -40,7 +40,7 @@ namespace RenDisco
             var context = parser.block();
 
             // Evaluate the parsed tree.
-            return (List<RenpyCommand>)Visit(context);
+            return (List<Command>)Visit(context);
         }
 
         public override object Visit(IParseTree tree)
@@ -50,8 +50,8 @@ namespace RenDisco
 
         public override object VisitBlock([NotNull] RenpyParser.BlockContext context)
         {
-            List<RenpyCommand> commands = context.statement()
-                .Select(statement => (RenpyCommand)Visit(statement))
+            List<Command> commands = context.statement()
+                .Select(statement => (Command)Visit(statement))
                 .Where(command => command != null)
                 .ToList();
 

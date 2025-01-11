@@ -131,7 +131,7 @@ label ending:
 
         // 1. Parse the script
         IRenpyParser parser = new AntlrRenpyParser();
-        List<RenpyCommand> commands = parser.Parse(code);
+        List<Command> commands = parser.Parse(code);
 
         // 2. Create the runtime engine
         IRuntimeEngine runtime = new ConsoleRuntimeEngine();
@@ -153,7 +153,7 @@ label ending:
                 int.TryParse(Console.ReadLine(), out int userChoice);
 
                 // Create a StepContext with the user's choice loaded
-                StepContext stepContext = new StepContext(userChoice - 1);
+                InputContext stepContext = new InputContext(userChoice - 1);
                 res = play.Step(stepContext: stepContext);
             }
             else

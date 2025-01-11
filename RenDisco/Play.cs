@@ -17,7 +17,7 @@ namespace RenDisco {
         // If this current Play is waiting for input
         private bool _waitingForInput;
 
-        public List<RenpyCommand> Commands;
+        public List<Command> Commands;
         public int ProgramCounter { get; set; }
         public bool ReturnToParent { get; set; }
         public Play? CurrentChild {
@@ -36,7 +36,7 @@ namespace RenDisco {
         /// <param name="runtime">The engine that executes the script actions.</param>
         /// <param name="commands">List of commands to execute.</param>
         /// <param name="parent">The parent Play context, used for handling scopes and returns.</param>
-        public Play(IRuntimeEngine runtime, List<RenpyCommand> commands, Play? parent = null)
+        public Play(IRuntimeEngine runtime, List<Command> commands, Play? parent = null)
         {
             Commands = commands;
             ProgramCounter = 0;
@@ -54,7 +54,7 @@ namespace RenDisco {
         /// </param>
         /// <param name="stepContext">Set our Step context.</param>
         /// <returns>Boolean indicating if execution should continue.</returns>
-        public bool Step(bool returnToParent = false, StepContext? stepContext = null)
+        public bool Step(bool returnToParent = false, InputContext? stepContext = null)
         {
             // This will permanently set current execution to return to Parent.
             if (returnToParent) ReturnToParent = true;
@@ -108,7 +108,7 @@ namespace RenDisco {
         /// </summary>
         /// <param name="command">The command to execute.</param>
         /// <returns>Boolean indicating if execution should continue.</returns>
-        private bool ExecuteCommand(RenpyCommand command, StepContext? stepContext = null)
+        private bool ExecuteCommand(Command command, InputContext? stepContext = null)
         {
             switch (command)
             {
@@ -185,7 +185,7 @@ namespace RenDisco {
         /// </summary>
         /// <param name="menu">The menu command containing choices and responses.</param>
         /// <returns>The result of the run, whether to break or not.</returns>
-        private void ExecuteMenu(Menu menu, StepContext? stepContext = null)
+        private void ExecuteMenu(Menu menu, InputContext? stepContext = null)
         {
             try
             {
@@ -221,13 +221,13 @@ namespace RenDisco {
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="content"></param>
-        private void ExecuteLabel(Label label, StepContext? stepContext = null)
+        private void ExecuteLabel(Label label, InputContext? stepContext = null)
         {
             this._child = new Play(_runtime, label.Commands, this);
             this._child.Step(stepContext: stepContext);
         }
 
-        private void ExecuteIfConditionalBlock(IfCondition block, StepContext? stepContext = null)
+        private void ExecuteIfConditionalBlock(IfCondition block, InputContext? stepContext = null)
         {
             // Execute the main if condition
             var result = ExecuteConditionalBlock(block.Condition, block.Content, stepContext);
@@ -254,7 +254,7 @@ namespace RenDisco {
         /// <param name="condition"></param>
         /// <param name="content"></param>
         /// <returns>The result of the run, whether to break or not.</returns>
-        private bool ExecuteConditionalBlock(string condition, List<RenpyCommand> content, StepContext? stepContext = null)
+        private bool ExecuteConditionalBlock(string condition, List<Command> content, InputContext? stepContext = null)
         {
             if (EvaluateCondition(condition))
             {
@@ -270,7 +270,7 @@ namespace RenDisco {
         /// Execute a jump command which modifies the program counter.
         /// </summary>
         /// <param name="labelName">The label name to jump to.</param>
-        private void ExecuteJump(string labelName, StepContext? stepContext = null)
+        private void ExecuteJump(string labelName, InputContext? stepContext = null)
         {
             this._child = FindLabel(labelName);
             if (this._child != null) {
@@ -305,7 +305,7 @@ namespace RenDisco {
         /// <returns>The result of the condition evaluation.</returns>
         private bool EvaluateCondition(string condition)
         {
-            return Evaluate.EvaluateCondition(_runtime, condition);
+            return ExpressionEvaluate.EvaluateCondition(_runtime, condition);
         }
     }
 }

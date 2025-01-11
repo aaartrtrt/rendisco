@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace RenDisco {
-    public static class Evaluate {
+    public static class ExpressionEvaluate {
 
         /// <summary>
         /// Evaluates a condition expressed as a string.
