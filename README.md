@@ -57,14 +57,14 @@ label finish:
 3. **Parse the script**:
    
 ```cs
-RenDisco.RenpyParser parser = new RenDisco.RenpyParser();
-List<RenDisco.RenpyCommand> commands = parser.Parse(script);
+Rendisco.IRenpyParser parser = new AntlrRenpyParser();
+Rendisco.List<RenpyCommand> commands = parser.Parse(code);
 ```
 
 4. **Set up the runtime engine**:
 
 ```cs
-RenDisco.IRuntimeEngine runtime = new RenDisco.SimpleRuntimeEngine();
+Rendisco.IRuntimeEngine runtime = new ConsoleRuntimeEngine();
 ```
 
 5. **Do a Step loop**:

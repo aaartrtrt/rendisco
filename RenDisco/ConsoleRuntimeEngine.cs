@@ -169,17 +169,5 @@ namespace RenDisco {
                 SetVariable(define.Name, define.Value.Trim('"'));
             }
         }
-
-        /// <summary>
-        /// Extracts the string within quotes for parsing purposes.
-        /// </summary>
-        /// <param name="text">The text containing the quoted string.</param>
-        /// <returns>The extracted string.</returns>
-        private string ExtractStringWithinQuotes(string text)
-        {
-            var match = Regex.Match(text, "\"([^\"]*)\"");
-            if (match.Success) return match.Groups[1].Value;
-            throw new ArgumentException("Provided string does not contain quotes or valid quoted text.");
-        }
     }
 }

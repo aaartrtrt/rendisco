@@ -50,6 +50,9 @@ label start:
         ""No, I prefer silence."":
             e ""Oh, maybe we'll turn it off, then.""
             $ mood = ""neutral""
+        ""No, I'm really tired..."":
+            e ""Oh, maybe we'll can wrap up, then.""
+            jump ending
 
     # Conditional Statements
     if mood == ""happy"":
@@ -127,7 +130,7 @@ label ending:
     return";
 
         // 1. Parse the script
-        AntlrRenpyParser parser = new AntlrRenpyParser();
+        IRenpyParser parser = new AntlrRenpyParser();
         List<RenpyCommand> commands = parser.Parse(code);
 
         // 2. Create the runtime engine

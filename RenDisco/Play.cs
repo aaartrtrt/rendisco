@@ -227,19 +227,43 @@ namespace RenDisco {
             this._child.Step(stepContext: stepContext);
         }
 
+        private void ExecuteIfConditionalBlock(IfCondition block, StepContext? stepContext = null)
+        {
+            // Execute the main if condition
+            var result = ExecuteConditionalBlock(block.Condition, block.Content, stepContext);
+            
+            // Otherwise, let's iterate
+            if (!result) {
+                foreach (var ElifCondition in block.ElifConditions)
+                {
+                    result = ExecuteConditionalBlock(ElifCondition.Condition, ElifCondition.Content, stepContext);
+                    if (result) break;
+                }
+            }
+
+            // If the condition still isn't true, we go to our else.
+            if (!result) {
+                this._child = new Play(_runtime, block.ElseConditions.Content, this);
+                this._child.Step(stepContext: stepContext);
+            }
+        }
+
         /// <summary>
         /// Handle commands conditionally.
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="content"></param>
         /// <returns>The result of the run, whether to break or not.</returns>
-        private void ExecuteConditionalBlock(string condition, List<RenpyCommand> content, StepContext? stepContext = null)
+        private bool ExecuteConditionalBlock(string condition, List<RenpyCommand> content, StepContext? stepContext = null)
         {
             if (EvaluateCondition(condition))
             {
                 this._child = new Play(_runtime, content, this);
                 this._child.Step(stepContext: stepContext);
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
