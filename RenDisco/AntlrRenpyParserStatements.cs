@@ -12,45 +12,173 @@ namespace RenDisco {
     /// </summary>
     public partial class AntlrRenpyParser : RenpyBaseVisitor<object>, IRenpyParser
     {
-        /// <summary>
-        /// Parses a script from a file by file path.
-        /// </summary>
-        /// <param name="filePath">Path to the Ren'Py script file.</param>
-        /// <returns>A list of RenpyCommand objects representing the script.</returns>
-        public List<RenpyCommand> ParseFromFile(string filePath)
-        {
-            string rpyCode = File.ReadAllText(filePath);
-            return Parse(rpyCode);
-        }
 
-        /// <summary>
-        /// Parses Ren'Py script code from a string.
-        /// </summary>
-        /// <param name="rpyCode">The Ren'Py script code as a string.</param>
-        /// <returns>A list of RenpyCommand objects representing the script.</returns>
-        public List<RenpyCommand> Parse(string rpyCode)
+        public override object VisitLabel_def([NotNull] RenpyParser.Label_defContext context)
         {
-            // Parse the input.
-            AntlrInputStream inputStream = new AntlrInputStream(rpyCode);
-            RenpyLexer lexer = new RenpyLexer(inputStream);
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-            RenpyParser parser = new RenpyParser(tokens);
-            var context = parser.block();
-
-            // Evaluate the parsed tree.
-            return (List<RenpyCommand>)Visit(context);
-        }
-
-        public override object VisitBlock([NotNull] RenpyParser.BlockContext context)
-        {
-            var commands = new List<RenpyCommand>
+            string labelName = context.IDENT().GetText();
+            string? argument = context.argument()?.expression()?.GetText();
+            var label = new Label { Name = labelName /*, Argument = argument*/ };
+            if (context.block() != null)
             {
-                (RenpyCommand)Visit(context.statement())
+                label.Commands.AddRange((List<RenpyCommand>)Visit(context.block()));
+            }
+            return label;
+        }
+
+        public override object VisitCharacter_def([NotNull] RenpyParser.Character_defContext context)
+        {
+            string name = context.IDENT().GetText();
+            string characterName = context.CHARACTER().GetText();
+            string stringValue = context.STRING(0).GetText().Trim('"');
+            string? color = context.STRING(1)?.GetText().Trim('"');
+
+            return new Define
+            {
+                Name = name,
+                Value = $"Character(\"{stringValue}\"{(color != null ? $", color=\"{color}\"" : "")})",
+                Definition = new MethodExpression
+                {
+                    MethodName = "Character",
+                    ParamList = new ParamListExpression
+                    {
+                        Params = new List<ParamPairExpression>
+                        {
+                            new ParamPairExpression { ParamValue = new StringLiteralExpression{Value = stringValue}},
+                            color != null ? new ParamPairExpression{ParamName = "color", ParamValue = new StringLiteralExpression{Value = color}} : null
+                        }.Where(x => x != null).ToList()
+                    }
+                }
             };
+        }
 
-            commands.AddRange((List<RenpyCommand>)Visit(context.block())); 
+        public override object VisitScene_def([NotNull] RenpyParser.Scene_defContext context)
+        {
+            return new Scene { Image = context.IDENT().GetText() };
+        }
 
-            return commands;
+        public override object VisitPause_def([NotNull] RenpyParser.Pause_defContext context)
+        {
+            return new Pause { Duration = double.Parse(context.INT().GetText()) };
+        }
+
+        public override object VisitPlay_music_def([NotNull] RenpyParser.Play_music_defContext context)
+        {
+            var playMusic = new PlayMusic { File = context.STRING().GetText().Trim('"') };
+            if (context.FLOAT() != null)
+            {
+                playMusic.FadeIn = float.Parse(context.FLOAT().GetText());
+            }
+            return playMusic;
+        }
+
+        public override object VisitStop_music_def([NotNull] RenpyParser.Stop_music_defContext context)
+        {
+            var stopMusic = new StopMusic();
+            if (context.FLOAT() != null)
+            {
+                stopMusic.FadeOut = float.Parse(context.FLOAT().GetText());
+            }
+            return stopMusic;
+        }
+
+        public override object VisitJump_def([NotNull] RenpyParser.Jump_defContext context)
+        {
+            return new Jump { Label = context.IDENT().GetText()};
+        }
+
+        /*
+        public override object VisitCall_def([NotNull] RenpyParser.Call_defContext context)
+        {
+            return new Call { Label = context.IDENT().GetText()};
+        }
+        */
+
+        public override object VisitMenu_def([NotNull] RenpyParser.Menu_defContext context)
+        {
+            var menu = new Menu();
+            foreach (var optionContext in context.menu_option())
+            {
+                menu.Choices.Add((MenuChoice)Visit(optionContext));
+            }
+            return menu;
+        }
+
+        public override object VisitMenu_option([NotNull] RenpyParser.Menu_optionContext context)
+        {
+            var choice = new MenuChoice { OptionText = context.STRING().GetText().Trim('"') };
+            if (context.block() != null)
+            {
+                choice.Response.AddRange((List<RenpyCommand>)Visit(context.block()));
+            }
+            return choice;
+        }
+
+        public override object VisitDefault_def([NotNull] RenpyParser.Default_defContext context)
+        {
+            return new Define { Name = context.IDENT().GetText(), Value = context.expression().GetText() };
+        }
+
+        public override object VisitReturn_def([NotNull] RenpyParser.Return_defContext context)
+        {
+            return new Return();
+        }
+
+        public override object VisitDialogue([NotNull] RenpyParser.DialogueContext context)
+        {
+            return new Dialogue { Character = context.character_ref().IDENT().GetText(), Text = context.STRING().GetText().Trim('"') };
+        }
+
+        public override object VisitNarration([NotNull] RenpyParser.NarrationContext context)
+        {
+            return new Narration { Text = context.STRING().GetText().Trim('"') };
+        }
+
+        public override object VisitConditional_block([NotNull] RenpyParser.Conditional_blockContext context)
+        {
+            var conditional_block = new IfCondition();
+            conditional_block.Content = (List<RenpyCommand>)Visit(context.block());
+            foreach (var elifBlock in context.elif_block())
+            {
+                conditional_block.ElifConditions.Add((ElifCondition)Visit(elifBlock));
+            }
+
+            if (context.else_block() != null)
+            {
+                conditional_block.ElseConditions = (ElseCondition)Visit(context.else_block());
+            }
+
+            return conditional_block;
+        }
+
+        public override object VisitElif_block([NotNull] RenpyParser.Elif_blockContext context)
+        {
+            var elifCondition = new ElifCondition { Condition = context.expression().GetText() };
+            if (context.block() != null)
+            {
+                elifCondition.Content.AddRange((List<RenpyCommand>)Visit(context.block()));
+            }
+            return elifCondition;
+        }
+
+        public override object VisitElse_block([NotNull] RenpyParser.Else_blockContext context)
+        {
+            var elseCondition = new ElseCondition();
+            if (context.block() != null)
+            {
+                elseCondition.Content.AddRange((List<RenpyCommand>)Visit(context.block()));
+            }
+            return elseCondition;
+        }
+
+        // ... (Implement other visitor methods for remaining rules like argument, expression if needed)
+        public override object VisitArgument([NotNull] RenpyParser.ArgumentContext context)
+        {
+            return context.expression().GetText();
+        }
+
+        public override object VisitExpression([NotNull] RenpyParser.ExpressionContext context)
+        {
+            return context.GetText();
         }
     }
 }
