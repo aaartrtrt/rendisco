@@ -52,11 +52,11 @@ namespace RenDisco
         public Expression ParamValue { get; set; }
     }
 
-    public class ParamListExpression : Expression
+    public class ArgumentsExpression : Expression
     {
         public override string Type => "param_list";
 
-        public IList<ParamPairExpression> Params { get; set; } = new List<ParamPairExpression>();
+        public IEnumerable<ParamPairExpression> Params { get; set; } = new List<ParamPairExpression>();
     }
 
     public class MethodExpression : Expression
@@ -64,6 +64,6 @@ namespace RenDisco
         public override string Type => "method";
 
         public string MethodName { get; set; }
-        public ParamListExpression ParamList { get; set; }
+        public ArgumentsExpression ParamList { get; set; }
     }
 }

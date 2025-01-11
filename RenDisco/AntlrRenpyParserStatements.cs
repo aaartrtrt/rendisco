@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
@@ -39,7 +40,7 @@ namespace RenDisco {
                 Definition = new MethodExpression
                 {
                     MethodName = "Character",
-                    ParamList = new ParamListExpression
+                    ParamList = new ArgumentsExpression
                     {
                         Params = new List<ParamPairExpression>
                         {
@@ -177,11 +178,31 @@ namespace RenDisco {
         public override object VisitElse_block([NotNull] RenpyParser.Else_blockContext context)
         {
             var elseCondition = new ElseCondition();
-            elseCondition.Content =(List<RenpyCommand>)Visit(context.block());
+            elseCondition.Content = (List<RenpyCommand>)Visit(context.block());
             return elseCondition;
         }
 
-        // ... (Implement other visitor methods for remaining rules like argument, expression if needed)
+        public override object VisitAguments([NotNull] RenpyParser.AgumentsContext context)
+        {
+            var argumentsExpression = new ArgumentsExpression();
+            argumentsExpression.Params = context.argument()
+                .ToList()
+                .Select(
+                    argument =>
+                    {
+                        var argumentContext = Visit(argument);
+                        var res = new ParamPairExpression {
+                            ParamName = argument.IDENT().GetText(),
+                            ParamValue = (Expression)VisitExpression(
+                                argument.expression()
+                            ),
+                        };
+                        return res;
+                    }
+                );
+            return argumentsExpression;
+        }
+
         public override object VisitArgument([NotNull] RenpyParser.ArgumentContext context)
         {
             return context.expression().GetText();
