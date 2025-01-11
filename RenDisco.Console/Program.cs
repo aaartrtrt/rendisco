@@ -131,7 +131,7 @@ label ending:
         List<RenpyCommand> commands = parser.Parse(code);
 
         // 2. Create the runtime engine
-        IRuntimeEngine runtime = new BaseRuntimeEngine();
+        IRuntimeEngine runtime = new ConsoleRuntimeEngine();
 
         // 3. Define variables or characters in the runtime engine
         runtime.SetVariable("playerName", "John");   // Example variable

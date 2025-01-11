@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace RenDisco {
-    public class BaseRuntimeEngine : IRuntimeEngine
+    public class ConsoleRuntimeEngine : IRuntimeEngine
     {
         private Dictionary<string, object> _variables = new Dictionary<string, object>();
         private Dictionary<string, Dictionary<string, string?>> _characters = new Dictionary<string, Dictionary<string, string?>>();

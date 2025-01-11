@@ -140,6 +140,10 @@ namespace RenDisco {
         /// Gets or sets the condition to evaluate.
         /// </summary>
         public string Condition { get; set; }
+
+        public List<ElifCondition> ElifConditions { get; set; } = new List<ElifCondition>();
+
+        public ElseCondition ElseConditions { get; set; } = new ElseCondition();
         
         /// <summary>
         /// Gets or sets the list of commands to execute if the condition is true.
@@ -158,6 +162,20 @@ namespace RenDisco {
         /// Gets or sets the condition to evaluate.
         /// </summary>
         public string Condition { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the list of commands to execute if the condition is true.
+        /// </summary>
+        public List<RenpyCommand> Content { get; set; } = new List<RenpyCommand>();
+    }
+
+
+    /// <summary>
+    /// Represents an elif-condition command to execute commands based on a condition (part of if-elif-else chain).
+    /// </summary>
+    public class ElseCondition : RenpyCommand
+    {
+        public override string Type => "else";
         
         /// <summary>
         /// Gets or sets the list of commands to execute if the condition is true.
@@ -289,5 +307,14 @@ namespace RenDisco {
         /// Gets or sets the label name to jump to.
         /// </summary>
         public string Label { get; set; }
+    }
+
+
+    /// <summary>
+    /// Represents a jump command to jump to a specified label.
+    /// </summary>
+    public class Return : RenpyCommand
+    {
+        public override string Type => "return";
     }
 }

@@ -130,13 +130,21 @@ character_ref:
   ;
 
 argument:
-  '(' expression ')' 
+  expression ',' argument
   ;
 
 conditional_block:
   IF expression ':' INDENT block DEDENT
-  (ELIF expression ':' INDENT block DEDENT)*
-  (ELSE ':' INDENT block DEDENT)?
+  (elif_block)*
+  (else_block)?
+  ;
+
+elif_block:
+  ELIF expression ':' INDENT block DEDENT
+  ;
+
+else_block:
+  ELSE ':' INDENT block DEDENT
   ;
 
 expression:
