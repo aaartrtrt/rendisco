@@ -29,7 +29,7 @@ To get started with RenDisco, clone this repository and build the solution in yo
    dotnet build
    ```
 
-See [Documentation/Renpy Parser via ANTLR4.md](Documentation/Renpy Parser via ANTLR4.md) for notes on updating the language grammar.
+See [Renpy Parser via ANTLR4](Documentation/Renpy_Parser_via_ANTLR4.md) for notes on updating the language grammar.
 
 ### Usage 🏗️
 
@@ -62,10 +62,11 @@ Rendisco.IRenpyParser parser = new Rendisco.AntlrRenpyParser();
 Rendisco.List<Rendisco.Command> commands = parser.Parse(code);
 ```
 
-4. **Set up the runtime engine**:
+4. **Set up the runtime engine and `Play` object**:
 
 ```cs
 Rendisco.IRuntimeEngine runtime = new ConsoleRuntimeEngine();
+Play play = new Play(runtime, commands);
 ```
 
 5. **Do a Step loop**:
@@ -80,8 +81,8 @@ while (true)
         int.TryParse(Console.ReadLine(), out int userChoice);
 
         // Create a StepContext with the user's choice loaded
-        InputContext stepContext = new InputContext(userChoice - 1);
-        play.Step(stepContext: stepContext);
+        InputContext inputContext = new InputContext(userChoice - 1);
+        play.Step(inputContext: inputContext);
     }
     else
     {

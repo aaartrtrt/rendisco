@@ -154,7 +154,7 @@ label ending:
 
                 // Create a StepContext with the user's choice loaded
                 InputContext stepContext = new InputContext(userChoice - 1);
-                res = play.Step(stepContext: stepContext);
+                res = play.Step(inputContext: stepContext);
             }
             else
             {

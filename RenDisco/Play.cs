@@ -52,9 +52,9 @@ namespace RenDisco {
         /// <param name="returnToParent">
         /// Specifies if this scope takes responsibility for calling parent context after completing current commands.
         /// </param>
-        /// <param name="stepContext">Set our Step context.</param>
+        /// <param name="inputContext">Set our Step context.</param>
         /// <returns>Boolean indicating if execution should continue.</returns>
-        public bool Step(bool returnToParent = false, InputContext? stepContext = null)
+        public bool Step(bool returnToParent = false, InputContext? inputContext = null)
         {
             // This will permanently set current execution to return to Parent.
             if (returnToParent) ReturnToParent = true;
@@ -73,7 +73,7 @@ namespace RenDisco {
                     else if (_jumped)
                         this.ProgramCounter = this.Commands.Count + 1; 
                 } else {
-                    _child.Step(stepContext: stepContext);
+                    _child.Step(inputContext: inputContext);
                     return true;
                 }
             }
@@ -84,7 +84,7 @@ namespace RenDisco {
                 // A parent doesn't necessarily mean this play is responsible for it. Check. 
                 if (_parent != null && ReturnToParent)
                 {
-                    _parent.Step(true, stepContext: stepContext);
+                    _parent.Step(true, inputContext: inputContext);
                     return true;
                 } else {
                     return false;
@@ -92,7 +92,7 @@ namespace RenDisco {
             }
 
             // Handle the current command
-            ExecuteCommand(Commands[ProgramCounter], stepContext);
+            ExecuteCommand(Commands[ProgramCounter], inputContext);
 
             // Menus will block further execution.
             if (!WaitingForInput)
@@ -224,7 +224,7 @@ namespace RenDisco {
         private void ExecuteLabel(Label label, InputContext? stepContext = null)
         {
             this._child = new Play(_runtime, label.Commands, this);
-            this._child.Step(stepContext: stepContext);
+            this._child.Step(inputContext: stepContext);
         }
 
         private void ExecuteIfConditionalBlock(IfCondition block, InputContext? stepContext = null)
@@ -244,7 +244,7 @@ namespace RenDisco {
             // If the condition still isn't true, we go to our else.
             if (!result) {
                 this._child = new Play(_runtime, block.ElseConditions.Content, this);
-                this._child.Step(stepContext: stepContext);
+                this._child.Step(inputContext: stepContext);
             }
         }
 
@@ -259,7 +259,7 @@ namespace RenDisco {
             if (EvaluateCondition(condition))
             {
                 this._child = new Play(_runtime, content, this);
-                this._child.Step(stepContext: stepContext);
+                this._child.Step(inputContext: stepContext);
                 return true;
             }
 
@@ -276,7 +276,7 @@ namespace RenDisco {
             if (this._child != null) {
                 this._jumped = true;
                 this._child.CurrentChild = null;
-                this._child?.Step(returnToParent: true, stepContext: stepContext);
+                this._child?.Step(returnToParent: true, inputContext: stepContext);
             }
         }
 
