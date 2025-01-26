@@ -240,17 +240,17 @@ public partial class RenpyBaseListener : IRenpyListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitCharacter_ref([NotNull] RenpyParser.Character_refContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="RenpyParser.aguments"/>.
+	/// Enter a parse tree produced by <see cref="RenpyParser.arguments"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterAguments([NotNull] RenpyParser.AgumentsContext context) { }
+	public virtual void EnterArguments([NotNull] RenpyParser.ArgumentsContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="RenpyParser.aguments"/>.
+	/// Exit a parse tree produced by <see cref="RenpyParser.arguments"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitAguments([NotNull] RenpyParser.AgumentsContext context) { }
+	public virtual void ExitArguments([NotNull] RenpyParser.ArgumentsContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="RenpyParser.argument"/>.
 	/// <para>The default implementation does nothing.</para>

@@ -141,7 +141,7 @@ namespace RenDisco {
                     ExecuteDefine(define);
                     break;
                 case IfCondition ifCondition:
-                    ExecuteConditionalBlock(ifCondition.Condition, ifCondition.Content, stepContext);
+                    ExecuteIfConditionalBlock(ifCondition, stepContext);
                     break;
                 case ElifCondition elifCondition:
                     ExecuteConditionalBlock(elifCondition.Condition, elifCondition.Content, stepContext);

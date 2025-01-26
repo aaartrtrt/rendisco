@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime.Misc;
 
-namespace RenDisco {
+namespace RenDisco
+{
     /// <summary>
     /// Parses Ren'Py script code and creates a list of RenpyCommand objects to represent the script.
     /// </summary>
@@ -11,14 +12,12 @@ namespace RenDisco {
 
         public override object VisitLabel_def([NotNull] RenpyParser.Label_defContext context)
         {
-            string labelName = context.IDENT().GetText();
-            // Deal with arguments
-            var label = new Label { Name = labelName /*, Argument = argument*/ };
-            if (context.block() != null)
+            return new Label
             {
-                label.Commands.AddRange((List<Command>)Visit(context.block()));
-            }
-            return label;
+                Name = context.IDENT().GetText(),
+                Commands = (context.block() != null) ? 
+                    (List<Command>)Visit(context.block()) : new List<Command>(),
+            };
         }
 
         public override object VisitCharacter_def([NotNull] RenpyParser.Character_defContext context)
@@ -39,8 +38,18 @@ namespace RenDisco {
                     {
                         Params = new List<ParamPairExpression>
                         {
-                            new ParamPairExpression { ParamValue = new StringLiteralExpression{Value = stringValue}},
-                            color != null ? new ParamPairExpression{ParamName = "color", ParamValue = new StringLiteralExpression{Value = color}} : null
+                            new ParamPairExpression { 
+                                ParamValue = new StringLiteralExpression{
+                                    Value = stringValue
+                                }
+                            },
+                            (color != null) ? 
+                                new ParamPairExpression{ 
+                                    ParamName = "color",
+                                    ParamValue = new StringLiteralExpression{
+                                        Value = color
+                                    }
+                                } : null
                         }.Where(x => x != null).ToList()
                     }
                 }
@@ -50,17 +59,14 @@ namespace RenDisco {
 
         public override object VisitAssignment([NotNull] RenpyParser.AssignmentContext context)
         {
-            string name = context.IDENT().GetText();
-            string value = context.expression().GetText();
-
             return new Define
             {
-                Name = name,
-                Value = value
+                Name = context.IDENT().GetText(),
+                Value = context.expression().GetText(),
             };
         }
 
-        
+
 
         public override object VisitScene_def([NotNull] RenpyParser.Scene_defContext context)
         {
@@ -94,7 +100,7 @@ namespace RenDisco {
 
         public override object VisitJump_def([NotNull] RenpyParser.Jump_defContext context)
         {
-            return new Jump { Label = context.IDENT().GetText()};
+            return new Jump { Label = context.IDENT().GetText() };
         }
 
         /*
@@ -177,7 +183,7 @@ namespace RenDisco {
             return elseCondition;
         }
 
-        public override object VisitAguments([NotNull] RenpyParser.AgumentsContext context)
+        public override object VisitArguments([NotNull] RenpyParser.ArgumentsContext context)
         {
             var argumentsExpression = new ArgumentsExpression();
             argumentsExpression.Params = context.argument()
@@ -186,7 +192,8 @@ namespace RenDisco {
                     argument =>
                     {
                         var argumentContext = Visit(argument);
-                        var res = new ParamPairExpression {
+                        var res = new ParamPairExpression
+                        {
                             ParamName = argument.IDENT().GetText(),
                             ParamValue = (Expression)VisitExpression(
                                 argument.expression()

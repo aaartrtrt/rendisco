@@ -59,7 +59,7 @@ statement:
   ;
 
 label_def:
-  'label' IDENT (aguments)? ':' (INDENT block DEDENT)?
+  'label' IDENT (arguments)? ':' (INDENT block DEDENT)?
   ;
 
 character_def:
@@ -69,7 +69,8 @@ character_def:
 scene_def:
   'scene' 'bg' IDENT ('with' (
     'dissolve'
-    | 'fade'))? //TODO: Implement transitions
+    | 'fade'
+    | 'crossfade'))? //TODO: Implement transitions
   ;
 
 pause_def:
@@ -85,11 +86,11 @@ stop_music_def:
   ;
 
 jump_def:
-  'jump' IDENT (aguments)?
+  'jump' IDENT (arguments)?
   ;
 
 call_def:
-  'call' IDENT (aguments)?
+  'call' IDENT (arguments)?
   ;
 
 menu_def:
@@ -123,7 +124,7 @@ character_ref:
   IDENT
   ;
 
-aguments:
+arguments:
   '(' argument (',' argument)* ')'
   ;
 

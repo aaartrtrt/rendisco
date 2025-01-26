@@ -201,15 +201,15 @@ public interface IRenpyListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitCharacter_ref([NotNull] RenpyParser.Character_refContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="RenpyParser.aguments"/>.
+	/// Enter a parse tree produced by <see cref="RenpyParser.arguments"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterAguments([NotNull] RenpyParser.AgumentsContext context);
+	void EnterArguments([NotNull] RenpyParser.ArgumentsContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="RenpyParser.aguments"/>.
+	/// Exit a parse tree produced by <see cref="RenpyParser.arguments"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitAguments([NotNull] RenpyParser.AgumentsContext context);
+	void ExitArguments([NotNull] RenpyParser.ArgumentsContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="RenpyParser.argument"/>.
 	/// </summary>

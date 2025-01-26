@@ -205,7 +205,7 @@ public partial class RenpyBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitCharacter_ref([NotNull] RenpyParser.Character_refContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="RenpyParser.aguments"/>.
+	/// Visit a parse tree produced by <see cref="RenpyParser.arguments"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -213,7 +213,7 @@ public partial class RenpyBaseVisitor<Result> : AbstractParseTreeVisitor<Result>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitAguments([NotNull] RenpyParser.AgumentsContext context) { return VisitChildren(context); }
+	public virtual Result VisitArguments([NotNull] RenpyParser.ArgumentsContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="RenpyParser.argument"/>.
 	/// <para>

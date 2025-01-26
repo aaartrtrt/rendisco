@@ -134,11 +134,11 @@ public interface IRenpyVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitCharacter_ref([NotNull] RenpyParser.Character_refContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="RenpyParser.aguments"/>.
+	/// Visit a parse tree produced by <see cref="RenpyParser.arguments"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitAguments([NotNull] RenpyParser.AgumentsContext context);
+	Result VisitArguments([NotNull] RenpyParser.ArgumentsContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="RenpyParser.argument"/>.
 	/// </summary>
